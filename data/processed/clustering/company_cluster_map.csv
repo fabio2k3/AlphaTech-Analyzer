@@ -1,31 +1,31 @@
 Company,Cluster
-ASML,2
-Accenture,2
-Adobe,2
+ASML,4
+Accenture,0
+Adobe,4
 Alphabet,0
-Amazon,0
-Apple,0
-Broadcom,0
+Amazon,4
+Apple,2
+Broadcom,2
 Cisco,0
-Cloudflare,2
-Fortinet,0
+Cloudflare,1
+Fortinet,2
 IBM,0
 Infosys,0
-Intel,0
-Meta Platforms,0
-Microsoft,0
-Netflix,0
+Intel,3
+Meta Platforms,4
+Microsoft,2
+Netflix,4
 Nvidia,1
 Oracle,0
 Palantir,1
-SAP,2
-Salesforce,2
+SAP,0
+Salesforce,4
 Samsung,0
-ServiceNow,0
-Snowflake,2
+ServiceNow,2
+Snowflake,3
 Sony,0
-Spotify,2
-Taiwan Semiconductor,0
-Tencent,0
+Spotify,4
+Taiwan Semiconductor,2
+Tencent,3
 Tesla,1
-Workday,2
+Workday,4
