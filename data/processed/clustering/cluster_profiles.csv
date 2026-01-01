@@ -1,5 +1,3 @@
-Cluster,N,Retorno_Anual_Prom,Volatilidad_Prom,Beta_Prom,Sharpe_Prom,Empresas_Top3
-0,10,23.91%,28.96%,0.97,0.83,"AAPL, AMZN, GOOGL"
-1,6,-0.01%,32.08%,0.68,0.05,"INTC, 0700.HK, CSCO"
-2,3,45.30%,66.70%,1.97,0.71,"NVDA, TSLA, PLTR"
-3,11,16.25%,37.32%,1.19,0.43,"NFLX, META, CRM"
+Cluster,N,Retorno_Mensual_Prom,Volatilidad_Mensual_Prom,Beta_Prom,Empresas_Top3
+0,26,0.0123,0.0920,0.98,"AAPL, AMZN, NFLX"
+1,4,0.0353,0.1904,1.81,"NVDA, TSLA, PLTR"
