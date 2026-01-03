@@ -1,0 +1,10 @@
+{
+    "obs_diff": -0.0428639526219806,
+    "ci_percentile_low": -0.07011851699856504,
+    "ci_percentile_high": -0.01934058117727427,
+    "ci_bca_low": -0.0742913165215815,
+    "ci_bca_high": -0.021518099695994664,
+    "p_boot_sym": 0.0,
+    "p_boot_absrule": 0.4874,
+    "n_boot": 5000
+}
