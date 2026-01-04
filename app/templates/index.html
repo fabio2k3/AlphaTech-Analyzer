@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Inversiones Tech - Predicción con PyTorch</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📈 Análisis de Inversiones en Tecnología</h1>
+            <p class="subtitle">Predicción con Regresión Lineal usando PyTorch</p>
+        </header>
+
+        <div class="search-section">
+            <h2>Selecciona una Empresa</h2>
+            <select id="companySelect" class="company-select">
+                <option value="">-- Selecciona una empresa --</option>
+                {% for ticker, name in companies.items() %}
+                <option value="{{ ticker }}">{{ name }} ({{ ticker }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="loadingSpinner" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Cargando datos y entrenando modelo...</p>
+        </div>
+
+        <div id="resultsSection" style="display: none;">
+            <div class="company-header">
+                <h2 id="companyName"></h2>
+                <span id="companyTicker" class="ticker-badge"></span>
+            </div>
+
+            <!-- Estadísticas principales -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Retorno Promedio</h3>
+                    <p id="meanReturn" class="stat-value"></p>
+                    <span class="stat-label">Mensual</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Volatilidad</h3>
+                    <p id="volatility" class="stat-value"></p>
+                    <span class="stat-label">Desviación Estándar</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Beta (vs QQQ)</h3>
+                    <p id="beta" class="stat-value"></p>
+                    <span class="stat-label">Sensibilidad al mercado</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Volumen Promedio</h3>
+                    <p id="avgVolume" class="stat-value"></p>
+                    <span class="stat-label">Mensual</span>
+                </div>
+            </div>
+
+            <!-- Predicciones -->
+            <div class="predictions-section">
+                <h2>🔮 Predicción para el Próximo Mes</h2>
+                
+                <div class="prediction-comparison">
+                    <div class="prediction-card">
+                        <h3>📊 Método Histórico</h3>
+                        <p class="prediction-value" id="historicalPrediction"></p>
+                        <span class="method-description">Basado en promedio histórico</span>
+                    </div>
+                    
+                    <div class="prediction-card highlight">
+                        <h3>🤖 Modelo PyTorch</h3>
+                        <p class="prediction-value" id="modelPrediction"></p>
+                        <span class="method-description">Regresión lineal entrenada</span>
+                        <div class="model-info">
+                            <small>Loss: <span id="modelLoss"></span></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="best-method">
+                    <p><strong>Método más preciso:</strong> <span id="bestMethod" class="method-badge"></span></p>
+                </div>
+            </div>
+
+            <!-- Probabilidades -->
+            <div class="probabilities-section">
+                <h2>📊 Probabilidades de Inversión</h2>
+                <div class="prob-container">
+                    <canvas id="probabilityChart"></canvas>
+                </div>
+                <div class="prob-values">
+                    <div class="prob-item success">
+                        <span class="prob-label">✅ Probabilidad de Éxito:</span>
+                        <span id="probSuccess" class="prob-percentage"></span>
+                    </div>
+                    <div class="prob-item failure">
+                        <span class="prob-label">❌ Probabilidad de Pérdida:</span>
+                        <span id="probFailure" class="prob-percentage"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculadora de inversión -->
+            <div class="investment-calculator">
+                <h2>💰 Calculadora de Inversión</h2>
+                <div class="calculator-form">
+                    <label for="investmentAmount">Monto a Invertir ($):</label>
+                    <input type="number" id="investmentAmount" placeholder="10000" min="1" step="100">
+                    <button id="calculateBtn" class="btn-calculate">Calcular Ganancia/Pérdida</button>
+                </div>
+                
+                <div id="investmentResults" style="display: none;">
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <span class="result-label">Inversión Inicial:</span>
+                            <span id="initialInvestment" class="result-value"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Retorno Esperado:</span>
+                            <span id="expectedReturn" class="result-value"></span>
+                        </div>
+                        <div class="result-item highlight-result">
+                            <span class="result-label">Ganancia/Pérdida:</span>
+                            <span id="profitLoss" class="result-value"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Monto Final:</span>
+                            <span id="finalAmount" class="result-value"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de comparación -->
+            <div class="chart-section">
+                <h2>📈 Análisis de Riesgo vs Retorno</h2>
+                <canvas id="riskReturnChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Proyecto Final de Estadística - Análisis de Acciones Tecnológicas 2018-2024</p>
+        <p><small>Datos actualizados al: Enero 2025</small></p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
