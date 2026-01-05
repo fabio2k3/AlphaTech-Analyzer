@@ -1,25 +1,26 @@
-/* app/static/script.js (versión anti-flash: debounce, abort, spinner delay, transitions) */
+/* Script optimizado con cache, debounce y manejo de escenarios */
 
 let currentCompanyData = null;
 let probabilityChart = null;
 let riskReturnChart = null;
 
-// Control de peticiones
+// Control de peticiones y cache
 let fetchAbortController = null;
 let debounceTimer = null;
 const DEBOUNCE_MS = 200;
+const dataCache = new Map(); // Cache de respuestas
 
-// Spinner/min delay
+// Spinner con delay
 let spinnerTimeout = null;
-const SPINNER_DELAY = 160; // ms: si la petición es más rápida no mostramos spinner
+const SPINNER_DELAY = 160;
 
-// Últimos valores de gráfico (evitar updates innecesarios)
+// Últimos valores para evitar updates innecesarios
 let lastProbSuccess = null;
 let lastProbFailure = null;
 let lastRiskPoint = { x: null, y: null };
 
 // Utilidades
-function qs(id) { return document.getElementById(id); }
+const qs = id => document.getElementById(id);
 
 function showError(message) {
     const el = qs('errorMessage');
@@ -30,21 +31,16 @@ function showError(message) {
     showError._t = setTimeout(() => { el.style.display = 'none'; }, 5000);
 }
 
-// Inicialización: preparar transiciones suaves en resultados y spinner
+// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
     const results = qs('resultsSection');
     if (results) {
         results.style.transition = 'opacity 220ms ease, transform 220ms ease';
-        // Inicialmente oculto con opacidad 0 y pointer-events none
-        if (results.style.display === '' || results.style.display === 'block') {
-            // leave as is; only set if not configured
-        } else {
-            results.style.opacity = 0;
-            results.style.transform = 'translateY(8px)';
-            results.style.pointerEvents = 'none';
-            results.style.display = 'block'; // keep in flow to avoid re-layout on show
-        }
+        results.style.opacity = 0;
+        results.style.transform = 'translateY(8px)';
+        results.style.pointerEvents = 'none';
     }
+    
     const spinner = qs('loadingSpinner');
     if (spinner) {
         spinner.style.transition = 'opacity 160ms linear';
@@ -52,33 +48,36 @@ document.addEventListener('DOMContentLoaded', () => {
         spinner.style.pointerEvents = 'none';
     }
 
-    // Attach debounced handler
     const companySelect = qs('companySelect');
     const calculateBtn = qs('calculateBtn');
+    
     if (companySelect) {
         companySelect.addEventListener('change', (e) => {
             if (debounceTimer) clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                handleCompanyChange(e);
-            }, DEBOUNCE_MS);
+            debounceTimer = setTimeout(() => handleCompanyChange(e), DEBOUNCE_MS);
         });
     }
+    
     if (calculateBtn) calculateBtn.addEventListener('click', calculateInvestment);
-
-    console.log('script (anti-flash) cargado');
+    
+    console.log('✅ App inicializada - modo optimizado');
 });
 
-// Spinner helpers with delay
+// Spinner con delay (fix: gestionar display)
 function showSpinnerWithDelay() {
     const spinner = qs('loadingSpinner');
     if (!spinner) return;
-    // solo mostrar si no aparece en SPINNER_DELAY ms
+    if (spinnerTimeout) clearTimeout(spinnerTimeout);
     spinnerTimeout = setTimeout(() => {
+        spinner.style.display = 'block';            // <-- mostrar
+        // Forzar reflow opcional (mejora transiciones)
+        void spinner.offsetWidth;
         spinner.style.opacity = 1;
         spinner.style.pointerEvents = 'auto';
         spinner.setAttribute('aria-hidden', 'false');
     }, SPINNER_DELAY);
 }
+
 function hideSpinnerImmediate() {
     const spinner = qs('loadingSpinner');
     if (!spinner) return;
@@ -86,31 +85,43 @@ function hideSpinnerImmediate() {
         clearTimeout(spinnerTimeout);
         spinnerTimeout = null;
     }
+    // desvanecer y luego ocultar para respetar la transición
     spinner.style.opacity = 0;
     spinner.style.pointerEvents = 'none';
     spinner.setAttribute('aria-hidden', 'true');
+    setTimeout(() => { 
+        // solo ocultar después de la transición
+        spinner.style.display = 'none';
+    }, 200);
 }
 
-// Mostrar/ocultar resultados con transición suave
+// Mostrar/ocultar resultados (fix: gestionar display)
 function showResultsSection() {
     const results = qs('resultsSection');
     if (!results) return;
-    // If already visible (opacity > 0.5) don't touch
+    // Asegurar que esté renderizable primero
+    results.style.display = 'block';
+    // Forzar reflow para que la transición funcione correctamente
+    void results.offsetWidth;
     const op = parseFloat(getComputedStyle(results).opacity || 0);
     if (op > 0.5) return;
     results.style.opacity = 1;
     results.style.transform = 'translateY(0)';
     results.style.pointerEvents = 'auto';
 }
+
 function hideResultsSection() {
     const results = qs('resultsSection');
     if (!results) return;
     results.style.opacity = 0;
     results.style.transform = 'translateY(8px)';
     results.style.pointerEvents = 'none';
+    // ocultar del flow después de la transición
+    setTimeout(() => { results.style.display = 'none'; }, 240);
 }
 
-// Fetch + cancel previous via AbortController
+
+// Fetch con cache y abort
 async function handleCompanyChange(event) {
     const ticker = event.target.value;
     if (!ticker) {
@@ -118,42 +129,55 @@ async function handleCompanyChange(event) {
         return;
     }
 
-    // Cancel previous fetch if exists
+    // Verificar cache primero
+    if (dataCache.has(ticker)) {
+        console.log('📦 Usando datos cacheados para', ticker);
+        const cachedData = dataCache.get(ticker);
+        window.requestAnimationFrame(() => {
+            displayCompanyData(cachedData);
+            showResultsSection();
+        });
+        return;
+    }
+
+    // Cancelar fetch anterior
     if (fetchAbortController) {
         try { fetchAbortController.abort(); } catch(e) {}
     }
     fetchAbortController = new AbortController();
     const signal = fetchAbortController.signal;
 
-    // Show spinner after delay
     showSpinnerWithDelay();
-    hideResultsSection(); // keep hidden until first render (but using opacity)
+    hideResultsSection();
 
     try {
-        const res = await fetch(`/api/company/${encodeURIComponent(ticker)}`, { cache: 'no-store', signal });
+        const res = await fetch(`/api/company/${encodeURIComponent(ticker)}`, { 
+            cache: 'no-store', 
+            signal 
+        });
+        
         if (!res.ok) {
             let txt;
             try { txt = await res.text(); } catch(e){ txt = res.statusText; }
             throw new Error(`HTTP ${res.status} - ${txt}`);
         }
+        
         const data = await res.json();
         if (data.error) {
             showError('Error: ' + data.error);
             return;
         }
+        
         currentCompanyData = data;
+        dataCache.set(ticker, data); // Guardar en cache
 
-        // Batch DOM updates in next animation frame to reduce reflow flicker
         window.requestAnimationFrame(() => {
             displayCompanyData(data);
             showResultsSection();
         });
 
     } catch (err) {
-        if (err.name === 'AbortError') {
-            // request aborted intentionally; ignore
-            return;
-        }
+        if (err.name === 'AbortError') return;
         console.error(err);
         showError('Error al cargar datos: ' + (err.message || err));
     } finally {
@@ -161,21 +185,23 @@ async function handleCompanyChange(event) {
     }
 }
 
-// Display minimal updates and avoid heavy layout churn
+// Display con escenarios
 function displayCompanyData(data) {
     // Header
     qs('companyName').textContent = data.company || '';
     qs('companyTicker').textContent = data.ticker || '';
 
-    // Stats (formatters are defensive)
+    // Stats
     qs('meanReturn').textContent = formatPercentageSafe(data.stats?.meanReturn);
     qs('volatility').textContent = formatPercentageSafe(data.stats?.volatility);
-    qs('beta').textContent = (data.stats && !isNaN(data.stats.beta)) ? Number(data.stats.beta).toFixed(3) : 'N/A';
+    qs('beta').textContent = (data.stats && !isNaN(data.stats.beta)) ? 
+        Number(data.stats.beta).toFixed(3) : 'N/A';
     qs('avgVolume').textContent = formatVolume(data.stats?.avgVolume || 0);
 
     // Predictions
     const hist = data.predictions?.historical;
     const mod = data.predictions?.model;
+    
     qs('historicalPrediction').textContent = formatPercentageSafe(hist);
     qs('modelPrediction').textContent = formatPercentageSafe(mod);
 
@@ -184,10 +210,15 @@ function displayCompanyData(data) {
     toggleClass('modelPrediction', 'positive', (mod !== undefined && mod >= 0));
     toggleClass('modelPrediction', 'negative', (mod !== undefined && mod < 0));
 
-    qs('modelLoss').textContent = (data.predictions?.modelLoss !== undefined && !isNaN(data.predictions.modelLoss)) ? Number(data.predictions.modelLoss).toFixed(6) : 'N/A';
+    const modelLoss = data.predictions?.modelLoss;
+    qs('modelLoss').textContent = (modelLoss !== undefined && !isNaN(modelLoss)) ? 
+        Number(modelLoss).toFixed(6) : 'N/A';
     qs('bestMethod').textContent = data.predictions?.bestMethod || '';
 
-    // Probabilities: accept both fraction (0..1) or percent (0..100)
+    // Renderizar escenarios
+    displayScenarios(data.predictions?.scenarios);
+
+    // Probabilidades
     let rawSuccess = Number(data.probabilities?.success);
     let rawFailure = Number(data.probabilities?.failure);
     if (isNaN(rawSuccess)) rawSuccess = 0;
@@ -196,50 +227,94 @@ function displayCompanyData(data) {
     let ps = (rawSuccess <= 1) ? rawSuccess * 100 : rawSuccess;
     let pf = (rawFailure <= 1) ? rawFailure * 100 : rawFailure;
 
-    // if both zero and predictions exist, try deriving sign-based prob (fallback)
-    if (ps === 0 && pf === 0 && typeof hist === 'number' && typeof mod === 'number') {
-        // simple heuristic: if mean positive, success >50
-        ps = (hist + 1) * 50; // heuristic, rarely used
-        pf = 100 - ps;
-    }
-
     qs('probSuccess').textContent = ps.toFixed(2) + '%';
     qs('probFailure').textContent = pf.toFixed(2) + '%';
 
-    // Update charts (only if meaningful change)
     updateProbabilityChartSmart(ps, pf);
 
     // Risk-return
     const vol = Number(data.stats?.volatility) || 0;
     const mean = Number(data.stats?.meanReturn) || 0;
-    updateRiskReturnChartSmart({ x: vol * 100, y: mean * 100, label: data.company || '' });
+    updateRiskReturnChartSmart({ 
+        x: vol * 100, 
+        y: mean * 100, 
+        label: data.company || '' 
+    });
 
-    // Reset investment ui
+    // Reset inversión
     qs('investmentResults').style.display = 'none';
     qs('investmentAmount').value = '';
+}
+
+// Renderizar tarjetas de escenarios
+function displayScenarios(scenarios) {
+    const container = qs('scenariosContainer');
+    if (!container) return;
+    
+    if (!scenarios) {
+        container.innerHTML = '<p style="text-align:center;color:#6b7280;">No hay análisis de escenarios disponible</p>';
+        return;
+    }
+
+    const scenarioOrder = ['optimistic', 'neutral', 'pessimistic'];
+    const scenarioIcons = {
+        'optimistic': '📈',
+        'neutral': '➡️',
+        'pessimistic': '📉'
+    };
+    const scenarioTitles = {
+        'optimistic': 'Escenario Optimista',
+        'neutral': 'Escenario Neutral',
+        'pessimistic': 'Escenario Pesimista'
+    };
+
+    let html = '';
+    scenarioOrder.forEach(key => {
+        const scenario = scenarios[key];
+        if (!scenario) return;
+
+        const returnVal = scenario.return || 0;
+        const prob = (scenario.probability || 0) * 100;
+        const desc = scenario.description || '';
+        const returnClass = returnVal >= 0 ? 'positive' : 'negative';
+
+        html += `
+            <div class="scenario-card ${key}">
+                <div class="scenario-header">
+                    <span class="scenario-title">${scenarioIcons[key]} ${scenarioTitles[key]}</span>
+                    <span class="scenario-prob">${prob.toFixed(0)}% prob.</span>
+                </div>
+                <div class="scenario-return ${returnClass}">
+                    ${formatPercentageSafe(returnVal)}
+                </div>
+                <div class="scenario-desc">${desc}</div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
 }
 
 function toggleClass(id, cls, on) {
     const el = qs(id);
     if (!el) return;
-    if (on) el.classList.add(cls); else el.classList.remove(cls);
+    if (on) el.classList.add(cls); 
+    else el.classList.remove(cls);
 }
 
-// Smart update for probability chart (avoid update if differences tiny)
+// Smart chart updates
 function updateProbabilityChartSmart(successPercent, failurePercent) {
-    // Tolerance: only update if change > 0.05%
     const EPS = 0.05;
-    if (lastProbSuccess !== null && Math.abs(lastProbSuccess - successPercent) < EPS &&
-        lastProbFailure !== null && Math.abs(lastProbFailure - failurePercent) < EPS) {
-        return; // negligible change
+    if (lastProbSuccess !== null && 
+        Math.abs(lastProbSuccess - successPercent) < EPS &&
+        Math.abs(lastProbFailure - failurePercent) < EPS) {
+        return;
     }
     lastProbSuccess = successPercent;
     lastProbFailure = failurePercent;
 
-    // create or update
     const ctx = qs('probabilityChart');
-    if (!ctx) return;
-    if (typeof Chart === 'undefined') return;
+    if (!ctx || typeof Chart === 'undefined') return;
 
     if (!probabilityChart) {
         probabilityChart = new Chart(ctx, {
@@ -249,32 +324,39 @@ function updateProbabilityChartSmart(successPercent, failurePercent) {
                 datasets: [{
                     data: [successPercent, failurePercent],
                     backgroundColor: ['rgba(16,185,129,0.9)', 'rgba(239,68,68,0.9)'],
-                    borderWidth: 1
+                    borderWidth: 2,
+                    borderColor: '#fff'
                 }]
             },
             options: {
                 animation: { duration: 300, easing: 'easeOutCubic' },
-                plugins: { legend: { position: 'bottom' }, tooltip: { mode: 'index' } },
+                plugins: { 
+                    legend: { position: 'bottom' }, 
+                    tooltip: { 
+                        callbacks: {
+                            label: context => `${context.label}: ${context.parsed.toFixed(2)}%`
+                        }
+                    } 
+                },
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: true
             }
         });
     } else {
         probabilityChart.data.datasets[0].data = [successPercent, failurePercent];
-        probabilityChart.update(300); // 300ms animated update
+        probabilityChart.update('none'); // Update sin animación
+        setTimeout(() => probabilityChart.update(300), 10); // Luego animar
     }
 }
 
-// Smart update for risk-return chart
 function updateRiskReturnChartSmart(point) {
     const ctx = qs('riskReturnChart');
-    if (!ctx) return;
-    if (typeof Chart === 'undefined') return;
+    if (!ctx || typeof Chart === 'undefined') return;
 
-    // tolerance check
     const EPS = 0.01;
-    if (lastRiskPoint.x !== null && Math.abs(lastRiskPoint.x - point.x) < EPS && Math.abs(lastRiskPoint.y - point.y) < EPS) {
-        // nothing meaningful changed
+    if (lastRiskPoint.x !== null && 
+        Math.abs(lastRiskPoint.x - point.x) < EPS && 
+        Math.abs(lastRiskPoint.y - point.y) < EPS) {
         return;
     }
     lastRiskPoint = { x: point.x, y: point.y };
@@ -287,41 +369,59 @@ function updateRiskReturnChartSmart(point) {
                     label: point.label || '',
                     data: [{ x: point.x, y: point.y }],
                     backgroundColor: 'rgba(37,99,235,0.9)',
-                    pointRadius: 9
+                    pointRadius: 10,
+                    pointHoverRadius: 12
                 }]
             },
             options: {
                 animation: { duration: 300, easing: 'easeOutCubic' },
-                plugins: { legend: { display: true } },
+                plugins: { 
+                    legend: { display: true },
+                    tooltip: {
+                        callbacks: {
+                            label: context => {
+                                return `${context.dataset.label}: Volatilidad ${context.parsed.x.toFixed(2)}%, Retorno ${context.parsed.y.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    x: { title: { display: true, text: 'Volatilidad %' } },
-                    y: { title: { display: true, text: 'Retorno %' } }
+                    x: { 
+                        title: { display: true, text: 'Volatilidad (%)' },
+                        beginAtZero: true
+                    },
+                    y: { 
+                        title: { display: true, text: 'Retorno Esperado (%)' }
+                    }
                 },
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: true
             }
         });
     } else {
         riskReturnChart.data.datasets[0].data = [{ x: point.x, y: point.y }];
         if (point.label) riskReturnChart.data.datasets[0].label = point.label;
-        riskReturnChart.update(300);
+        riskReturnChart.update('none');
+        setTimeout(() => riskReturnChart.update(300), 10);
     }
 }
 
-// Investment calculation (unchanged core logic)
+// Calculadora de inversión
 async function calculateInvestment() {
     const el = qs('investmentAmount');
-    const investmentAmount = parseFloat(el && el.value);
+    const investmentAmount = parseFloat(el?.value);
+    
     if (!investmentAmount || investmentAmount <= 0) {
         showError('Por favor ingresa un monto válido');
         return;
     }
+    
     if (!currentCompanyData) {
         showError('Primero selecciona una empresa');
         return;
     }
 
-    const predictedReturnFraction = (currentCompanyData.predictions?.bestMethod === "Modelo PyTorch")
+    const predictedReturnFraction = (currentCompanyData.predictions?.bestMethod?.includes("PyTorch"))
         ? currentCompanyData.predictions.model
         : currentCompanyData.predictions.historical;
 
@@ -329,35 +429,47 @@ async function calculateInvestment() {
         const res = await fetch('/api/calculate_investment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ investment: investmentAmount, predictedReturn: predictedReturnFraction })
+            body: JSON.stringify({ 
+                investment: investmentAmount, 
+                predictedReturn: predictedReturnFraction 
+            })
         });
+        
         if (!res.ok) {
             let t;
             try { t = await res.text(); } catch(e) { t = res.statusText; }
             throw new Error(`HTTP ${res.status} - ${t}`);
         }
+        
         const result = await res.json();
-        if (result.error) { showError('Error al calcular: ' + result.error); return; }
-        // show results
+        if (result.error) { 
+            showError('Error: ' + result.error); 
+            return; 
+        }
+        
         qs('initialInvestment').textContent = formatCurrency(result.investment);
         qs('expectedReturn').textContent = formatPercentageSafe(result.predictedReturn);
         qs('profitLoss').textContent = formatCurrency(result.profit);
         qs('finalAmount').textContent = formatCurrency(result.finalAmount);
 
-        qs('investmentResults').style.display = 'block';
-        qs('investmentResults').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const resultsDiv = qs('investmentResults');
+        resultsDiv.style.display = 'block';
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (err) {
         console.error(err);
         showError('Error de conexión: ' + (err.message || err));
     }
 }
 
-// Formatters (defensive)
+// Formatters
 function formatPercentageSafe(v) {
     if (v === null || v === undefined || isNaN(v)) return 'N/A';
     const n = Number(v);
-    return ((n <= 1) ? n * 100 : n).toFixed(2) + '%';
+    const percent = (n <= 1) ? n * 100 : n;
+    const sign = percent >= 0 ? '+' : '';
+    return sign + percent.toFixed(2) + '%';
 }
+
 function formatVolume(value) {
     if (!value) return '0';
     if (value >= 1e9) return (value / 1e9).toFixed(2) + 'B';
@@ -365,7 +477,13 @@ function formatVolume(value) {
     if (value >= 1e3) return (value / 1e3).toFixed(2) + 'K';
     return Number(value).toFixed(0);
 }
+
 function formatCurrency(value) {
     if (value === null || value === undefined || isNaN(value)) return 'N/A';
-    return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(value);
+    return new Intl.NumberFormat('es-MX', { 
+        style: 'currency', 
+        currency: 'USD', 
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(value);
 }

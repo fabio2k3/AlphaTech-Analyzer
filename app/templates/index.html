@@ -4,11 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Análisis de Inversiones Tech - Predicción con PyTorch</title>
-
-    <!-- Asegúrate que el archivo en static se llame exactamente "style.css" -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-
-    <!-- Pequeña regla utilitaria para accesibilidad (si no la incluyes en tu CSS principal) -->
     <style>
         .sr-only {
             position: absolute !important;
@@ -21,22 +17,66 @@
             white-space: nowrap !important;
             border: 0 !important;
         }
+        .scenario-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s;
+        }
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .scenario-card.optimistic { border-left-color: var(--success-color); }
+        .scenario-card.pessimistic { border-left-color: var(--danger-color); }
+        .scenario-card.neutral { border-left-color: var(--warning-color); }
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .scenario-title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .scenario-prob {
+            background: #e5e7eb;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .scenario-return {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .scenario-desc {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+        .scenarios-section {
+            background: #f0f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
     </style>
-
-    <!-- Chart.js (defer para no bloquear render) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>📈 Análisis de Inversiones en Tecnología</h1>
-            <p class="subtitle">Predicción con Regresión Lineal usando PyTorch</p>
+            <p class="subtitle">Predicción Avanzada con Deep Learning y Análisis de Escenarios</p>
         </header>
 
         <div class="search-section">
             <h2>Selecciona una Empresa</h2>
-
-            <!-- Label accesible -->
             <label for="companySelect" class="sr-only">Selecciona una empresa (ticker)</label>
             <select id="companySelect" class="company-select" aria-label="Selecciona una empresa">
                 <option value="">-- Selecciona una empresa --</option>
@@ -46,23 +86,20 @@
             </select>
         </div>
 
-        <!-- Mensaje global de error (UI) -->
         <div id="errorMessage" role="alert" style="display:none; color:#b91c1c; text-align:center; margin:16px 0;"></div>
 
-        <!-- Spinner / estado de carga -->
-        <div id="loadingSpinner" class="loading" style="display: none;" role="status" aria-live="polite" aria-hidden="true">
-            <div class="spinner" aria-hidden="true"></div>
-            <p>Cargando datos y entrenando modelo...</p>
+        <div id="loadingSpinner" class="loading" style="display: none;" role="status" aria-live="polite">
+            <div class="spinner"></div>
+            <p>Analizando datos y entrenando modelo avanzado...</p>
         </div>
 
-        <!-- Resultado principal -->
         <div id="resultsSection" style="display: none;">
             <div class="company-header" role="region" aria-labelledby="companyName">
                 <h2 id="companyName"></h2>
-                <span id="companyTicker" class="ticker-badge" aria-hidden="false"></span>
+                <span id="companyTicker" class="ticker-badge"></span>
             </div>
 
-            <!-- Estadísticas principales -->
+            <!-- Estadísticas -->
             <div class="stats-grid" role="list">
                 <div class="stat-card" role="listitem">
                     <h3>Retorno Promedio</h3>
@@ -86,23 +123,23 @@
                 </div>
             </div>
 
-            <!-- Predicciones -->
+            <!-- Predicciones Base -->
             <div class="predictions-section" role="region" aria-labelledby="predictionsTitle">
                 <h2 id="predictionsTitle">🔮 Predicción para el Próximo Mes</h2>
 
                 <div class="prediction-comparison">
-                    <div class="prediction-card" aria-live="polite">
+                    <div class="prediction-card">
                         <h3>📊 Método Histórico</h3>
                         <p class="prediction-value" id="historicalPrediction"></p>
                         <span class="method-description">Basado en promedio histórico</span>
                     </div>
 
-                    <div class="prediction-card highlight" aria-live="polite">
-                        <h3>🤖 Modelo PyTorch</h3>
+                    <div class="prediction-card highlight">
+                        <h3>🤖 Modelo PyTorch Avanzado</h3>
                         <p class="prediction-value" id="modelPrediction"></p>
-                        <span class="method-description">Regresión lineal entrenada</span>
+                        <span class="method-description">Red neuronal con factores macro</span>
                         <div class="model-info">
-                            <small>Loss: <span id="modelLoss"></span></small>
+                            <small>RMSE: <span id="modelLoss"></span></small>
                         </div>
                     </div>
                 </div>
@@ -112,31 +149,43 @@
                 </div>
             </div>
 
+            <!-- Análisis de Escenarios -->
+            <div class="scenarios-section" role="region" aria-labelledby="scenariosTitle">
+                <h2 id="scenariosTitle">🎯 Análisis de Escenarios de Mercado</h2>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">
+                    Predicciones considerando diferentes condiciones de mercado y factores macroeconómicos
+                </p>
+                
+                <div id="scenariosContainer">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+
             <!-- Probabilidades -->
             <div class="probabilities-section" role="region" aria-labelledby="probTitle">
-                <h2 id="probTitle">📊 Probabilidades de Inversión</h2>
-                <div class="prob-container" aria-hidden="false">
-                    <canvas id="probabilityChart" role="img" aria-label="Gráfico de probabilidad de éxito y fracaso"></canvas>
+                <h2 id="probTitle">📊 Probabilidades de Inversión (Ponderadas)</h2>
+                <div class="prob-container">
+                    <canvas id="probabilityChart" role="img" aria-label="Gráfico de probabilidad"></canvas>
                 </div>
 
                 <div class="prob-values">
                     <div class="prob-item success">
                         <span class="prob-label">✅ Probabilidad de Éxito:</span>
-                        <span id="probSuccess" class="prob-percentage" aria-live="polite"></span>
+                        <span id="probSuccess" class="prob-percentage"></span>
                     </div>
                     <div class="prob-item failure">
                         <span class="prob-label">❌ Probabilidad de Pérdida:</span>
-                        <span id="probFailure" class="prob-percentage" aria-live="polite"></span>
+                        <span id="probFailure" class="prob-percentage"></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Calculadora de inversión -->
+            <!-- Calculadora -->
             <div class="investment-calculator" role="region" aria-labelledby="calcTitle">
                 <h2 id="calcTitle">💰 Calculadora de Inversión</h2>
                 <div class="calculator-form">
                     <label for="investmentAmount">Monto a Invertir ($):</label>
-                    <input type="number" id="investmentAmount" placeholder="10000" min="1" step="100" aria-label="Monto a invertir" />
+                    <input type="number" id="investmentAmount" placeholder="10000" min="1" step="100" />
                     <button id="calculateBtn" class="btn-calculate" type="button">Calcular Ganancia/Pérdida</button>
                 </div>
 
@@ -162,7 +211,7 @@
                 </div>
             </div>
 
-            <!-- Gráfico de comparación -->
+            <!-- Gráfico -->
             <div class="chart-section" role="region" aria-labelledby="riskTitle">
                 <h2 id="riskTitle">📈 Análisis de Riesgo vs Retorno</h2>
                 <canvas id="riskReturnChart" role="img" aria-label="Gráfico riesgo vs retorno"></canvas>
@@ -171,18 +220,16 @@
     </div>
 
     <footer>
-        <p>Proyecto Final de Estadística - Análisis de Acciones Tecnológicas 2018-2024</p>
-        <p><small>Datos actualizados al: Enero 2025</small></p>
+        <p>Proyecto Final de Estadística - Análisis Avanzado de Acciones Tecnológicas 2018-2024</p>
+        <p><small>Predicciones con factores macroeconómicos y análisis de sentimiento</small></p>
     </footer>
 
-    <!-- Mensaje para navegadores sin JS -->
     <noscript>
         <div style="background:#fff3cd; color:#664d03; padding:12px; border-radius:8px; margin:16px auto; max-width:900px; text-align:center;">
-            Esta aplicación requiere JavaScript para funcionar correctamente. Por favor habilita JavaScript o usa un navegador moderno.
+            Esta aplicación requiere JavaScript para funcionar correctamente.
         </div>
     </noscript>
 
-    <!-- Script principal -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
