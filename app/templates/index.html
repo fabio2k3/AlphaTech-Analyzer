@@ -1,11 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Análisis de Inversiones Tech - Predicción con PyTorch</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Asegúrate que el archivo en static se llame exactamente "style.css" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+
+    <!-- Pequeña regla utilitaria para accesibilidad (si no la incluyes en tu CSS principal) -->
+    <style>
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0,0,0,0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+    </style>
+
+    <!-- Chart.js (defer para no bloquear render) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -16,7 +35,10 @@
 
         <div class="search-section">
             <h2>Selecciona una Empresa</h2>
-            <select id="companySelect" class="company-select">
+
+            <!-- Label accesible -->
+            <label for="companySelect" class="sr-only">Selecciona una empresa (ticker)</label>
+            <select id="companySelect" class="company-select" aria-label="Selecciona una empresa">
                 <option value="">-- Selecciona una empresa --</option>
                 {% for ticker, name in companies.items() %}
                 <option value="{{ ticker }}">{{ name }} ({{ ticker }})</option>
@@ -24,35 +46,40 @@
             </select>
         </div>
 
-        <div id="loadingSpinner" class="loading" style="display: none;">
-            <div class="spinner"></div>
+        <!-- Mensaje global de error (UI) -->
+        <div id="errorMessage" role="alert" style="display:none; color:#b91c1c; text-align:center; margin:16px 0;"></div>
+
+        <!-- Spinner / estado de carga -->
+        <div id="loadingSpinner" class="loading" style="display: none;" role="status" aria-live="polite" aria-hidden="true">
+            <div class="spinner" aria-hidden="true"></div>
             <p>Cargando datos y entrenando modelo...</p>
         </div>
 
+        <!-- Resultado principal -->
         <div id="resultsSection" style="display: none;">
-            <div class="company-header">
+            <div class="company-header" role="region" aria-labelledby="companyName">
                 <h2 id="companyName"></h2>
-                <span id="companyTicker" class="ticker-badge"></span>
+                <span id="companyTicker" class="ticker-badge" aria-hidden="false"></span>
             </div>
 
             <!-- Estadísticas principales -->
-            <div class="stats-grid">
-                <div class="stat-card">
+            <div class="stats-grid" role="list">
+                <div class="stat-card" role="listitem">
                     <h3>Retorno Promedio</h3>
                     <p id="meanReturn" class="stat-value"></p>
                     <span class="stat-label">Mensual</span>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" role="listitem">
                     <h3>Volatilidad</h3>
                     <p id="volatility" class="stat-value"></p>
                     <span class="stat-label">Desviación Estándar</span>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" role="listitem">
                     <h3>Beta (vs QQQ)</h3>
                     <p id="beta" class="stat-value"></p>
                     <span class="stat-label">Sensibilidad al mercado</span>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" role="listitem">
                     <h3>Volumen Promedio</h3>
                     <p id="avgVolume" class="stat-value"></p>
                     <span class="stat-label">Mensual</span>
@@ -60,17 +87,17 @@
             </div>
 
             <!-- Predicciones -->
-            <div class="predictions-section">
-                <h2>🔮 Predicción para el Próximo Mes</h2>
-                
+            <div class="predictions-section" role="region" aria-labelledby="predictionsTitle">
+                <h2 id="predictionsTitle">🔮 Predicción para el Próximo Mes</h2>
+
                 <div class="prediction-comparison">
-                    <div class="prediction-card">
+                    <div class="prediction-card" aria-live="polite">
                         <h3>📊 Método Histórico</h3>
                         <p class="prediction-value" id="historicalPrediction"></p>
                         <span class="method-description">Basado en promedio histórico</span>
                     </div>
-                    
-                    <div class="prediction-card highlight">
+
+                    <div class="prediction-card highlight" aria-live="polite">
                         <h3>🤖 Modelo PyTorch</h3>
                         <p class="prediction-value" id="modelPrediction"></p>
                         <span class="method-description">Regresión lineal entrenada</span>
@@ -86,32 +113,33 @@
             </div>
 
             <!-- Probabilidades -->
-            <div class="probabilities-section">
-                <h2>📊 Probabilidades de Inversión</h2>
-                <div class="prob-container">
-                    <canvas id="probabilityChart"></canvas>
+            <div class="probabilities-section" role="region" aria-labelledby="probTitle">
+                <h2 id="probTitle">📊 Probabilidades de Inversión</h2>
+                <div class="prob-container" aria-hidden="false">
+                    <canvas id="probabilityChart" role="img" aria-label="Gráfico de probabilidad de éxito y fracaso"></canvas>
                 </div>
+
                 <div class="prob-values">
                     <div class="prob-item success">
                         <span class="prob-label">✅ Probabilidad de Éxito:</span>
-                        <span id="probSuccess" class="prob-percentage"></span>
+                        <span id="probSuccess" class="prob-percentage" aria-live="polite"></span>
                     </div>
                     <div class="prob-item failure">
                         <span class="prob-label">❌ Probabilidad de Pérdida:</span>
-                        <span id="probFailure" class="prob-percentage"></span>
+                        <span id="probFailure" class="prob-percentage" aria-live="polite"></span>
                     </div>
                 </div>
             </div>
 
             <!-- Calculadora de inversión -->
-            <div class="investment-calculator">
-                <h2>💰 Calculadora de Inversión</h2>
+            <div class="investment-calculator" role="region" aria-labelledby="calcTitle">
+                <h2 id="calcTitle">💰 Calculadora de Inversión</h2>
                 <div class="calculator-form">
                     <label for="investmentAmount">Monto a Invertir ($):</label>
-                    <input type="number" id="investmentAmount" placeholder="10000" min="1" step="100">
-                    <button id="calculateBtn" class="btn-calculate">Calcular Ganancia/Pérdida</button>
+                    <input type="number" id="investmentAmount" placeholder="10000" min="1" step="100" aria-label="Monto a invertir" />
+                    <button id="calculateBtn" class="btn-calculate" type="button">Calcular Ganancia/Pérdida</button>
                 </div>
-                
+
                 <div id="investmentResults" style="display: none;">
                     <div class="result-grid">
                         <div class="result-item">
@@ -135,9 +163,9 @@
             </div>
 
             <!-- Gráfico de comparación -->
-            <div class="chart-section">
-                <h2>📈 Análisis de Riesgo vs Retorno</h2>
-                <canvas id="riskReturnChart"></canvas>
+            <div class="chart-section" role="region" aria-labelledby="riskTitle">
+                <h2 id="riskTitle">📈 Análisis de Riesgo vs Retorno</h2>
+                <canvas id="riskReturnChart" role="img" aria-label="Gráfico riesgo vs retorno"></canvas>
             </div>
         </div>
     </div>
@@ -147,6 +175,14 @@
         <p><small>Datos actualizados al: Enero 2025</small></p>
     </footer>
 
+    <!-- Mensaje para navegadores sin JS -->
+    <noscript>
+        <div style="background:#fff3cd; color:#664d03; padding:12px; border-radius:8px; margin:16px auto; max-width:900px; text-align:center;">
+            Esta aplicación requiere JavaScript para funcionar correctamente. Por favor habilita JavaScript o usa un navegador moderno.
+        </div>
+    </noscript>
+
+    <!-- Script principal -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
