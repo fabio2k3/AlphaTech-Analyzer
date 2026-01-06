@@ -434,7 +434,13 @@ def train_predict_for_ticker_panel(df_panel, ticker):
 # ---------- RUTAS ----------
 @app.route('/')
 def index():
-    return render_template('index.html', companies=COMPANIES)
+    # Convertir a lista de dicts y ordenar por nombre
+    companies_sorted = sorted(
+        [{'ticker': t, 'name': n} for t, n in COMPANIES.items()],
+        key=lambda x: x['name'].lower()
+    )
+    return render_template('index.html', companies=companies_sorted)
+
 
 @app.route('/api/company/<ticker>')
 def get_company_data(ticker):

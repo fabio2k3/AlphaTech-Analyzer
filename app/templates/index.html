@@ -80,8 +80,8 @@
             <label for="companySelect" class="sr-only">Selecciona una empresa (ticker)</label>
             <select id="companySelect" class="company-select" aria-label="Selecciona una empresa">
                 <option value="">-- Selecciona una empresa --</option>
-                {% for ticker, name in companies.items() %}
-                <option value="{{ ticker }}">{{ name }} ({{ ticker }})</option>
+                {% for c in companies %}
+                <option value="{{ c.ticker }}">{{ c.name }} ({{ c.ticker }})</option>
                 {% endfor %}
             </select>
         </div>
@@ -190,25 +190,46 @@
                 </div>
 
                 <div id="investmentResults" style="display: none;">
-                    <div class="result-grid">
+                    <h3 style="text-align:center; margin-bottom:12px;">Resultados por Método / Escenario</h3>
+
+                    <!-- Resumen de inversión -->
+                    <div class="result-grid" style="margin-bottom:16px;">
                         <div class="result-item">
                             <span class="result-label">Inversión Inicial:</span>
                             <span id="initialInvestment" class="result-value"></span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">Retorno Esperado:</span>
-                            <span id="expectedReturn" class="result-value"></span>
-                        </div>
-                        <div class="result-item highlight-result">
-                            <span class="result-label">Ganancia/Pérdida:</span>
-                            <span id="profitLoss" class="result-value"></span>
+                            <span class="result-label">Panel filas (historial):</span>
+                            <span id="panelRows" class="result-value"></span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">Monto Final:</span>
-                            <span id="finalAmount" class="result-value"></span>
+                            <span class="result-label">Método disponible:</span>
+                            <span id="modelAvailable" class="result-value"></span>
                         </div>
                     </div>
+
+                    <!-- Tabla comparativa -->
+                    <div style="overflow-x:auto;">
+                        <table id="investmentTable" style="width:100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background:#f3f4f6;">
+                                    <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Método / Escenario</th>
+                                    <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Retorno previsto</th>
+                                    <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Ganancia / Pérdida</th>
+                                    <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Monto final</th>
+                                </tr>
+                            </thead>
+                            <tbody id="investmentTableBody">
+                                <!-- Se rellena por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="text-align:center; margin-top:12px; color:var(--text-secondary); font-size:0.9em;">
+                        * Retornos expresados como porcentajes mensuales. Si el valor está en fracción (ej. 0.02) se interpreta como 2.00%.
+                    </div>
                 </div>
+
             </div>
 
             <!-- Gráfico -->
