@@ -1,8 +1,8 @@
 {
     "n_companies_qqq": 30,
     "n_companies_eqw": 30,
-    "mean_beta_qqq": 1.0919294352510307,
+    "mean_beta_qqq": 1.0919286216471236,
     "mean_beta_eqw": 1.0163251634570662,
-    "corr_betas": 0.970026635177619,
-    "mean_abs_diff": 0.10605725523456776
+    "corr_betas": 0.9700267192438664,
+    "mean_abs_diff": 0.1060565833376744
 }
