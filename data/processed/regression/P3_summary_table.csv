@@ -1,0 +1,9 @@
+Estadístico,Valor
+N (empresas),30
+R²,0.1852
+R² ajustado,0.1561
+F-statistic,3.0624
+p-value (modelo),0.0911
+β₀ (intercepto),0.146067
+β₁ (Corr_Market),-0.207437
+p-value (β₁),0.0801

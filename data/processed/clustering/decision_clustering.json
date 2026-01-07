@@ -1,0 +1,18 @@
+{
+  "k_seleccionado": 2,
+  "justificacion": "Parsimonia + mejor balance m\u00e9trico (puntos: 2 vs 2)",
+  "metricas_k2": {
+    "k": 2,
+    "silhouette": 0.6083065435121827,
+    "calinski_harabasz": 28.17208053302677,
+    "davies_bouldin": 0.7766107789825203,
+    "inertia": 59.81619281529842
+  },
+  "metricas_k9": {
+    "k": 9,
+    "silhouette": 0.331367117823455,
+    "calinski_harabasz": 37.33533796226079,
+    "davies_bouldin": 0.6311399257962766,
+    "inertia": 7.882816213854131
+  }
+}
