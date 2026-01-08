@@ -1,0 +1,1031 @@
+% ============================================================================
+% INFORME ESTADÍSTICO - ALPHATECH ANALYZER
+% Análisis Cuantitativo del Sector Tecnológico NASDAQ-100 (2018-2024)
+% ============================================================================
+% Compilar con: pdflatex INFORME_ESTADISTICO.tex (ejecutar 2 veces)
+% ============================================================================
+
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================================
+% PAQUETES ESENCIALES
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{lmodern}
+
+% Matemáticas
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+
+% Geometría y espaciado
+\usepackage[margin=2.5cm, headheight=15pt]{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+
+% Gráficos e imágenes
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+
+% Tablas profesionales
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{colortbl}
+
+% Colores y cajas
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable,theorems}
+
+% Diagramas
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,backgrounds,fit}
+
+% Enlaces
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=NavyBlue,
+    urlcolor=RoyalBlue,
+    citecolor=ForestGreen,
+    pdftitle={Informe Estadístico - AlphaTech Analyzer},
+    pdfauthor={MATCOM - Universidad de La Habana}
+}
+
+% Encabezados y pies de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small\textcolor{NavyBlue}{\textbf{AlphaTech Analyzer}}}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{\small\textit{NASDAQ-100 Analysis}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+% Títulos con estilo
+\usepackage{titlesec}
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{NavyBlue}}
+    {\colorbox{NavyBlue!10}{\makebox[2em][c]{\textcolor{NavyBlue}{\thesection}}}}{1em}{}
+    [\vspace{-0.5em}\textcolor{NavyBlue}{\rule{\textwidth}{0.5pt}}]
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\color{RoyalBlue}}
+    {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+    {\normalfont\normalsize\bfseries\color{CornflowerBlue}}
+    {\thesubsubsection}{1em}{}
+
+% Listas personalizadas
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*,label=\textcolor{NavyBlue}{\textbullet}}
+\setlist[enumerate]{leftmargin=*}
+
+% Símbolos adicionales
+\usepackage{pifont}
+\newcommand{\cmark}{\textcolor{ForestGreen}{\ding{51}}}
+\newcommand{\xmark}{\textcolor{Crimson}{\ding{55}}}
+\newcommand{\wmark}{\textcolor{Orange}{\ding{115}}}
+
+% ============================================================================
+% RUTA DE IMÁGENES - IMPORTANTE: Ruta relativa desde docs/
+% ============================================================================
+\graphicspath{{../data/processed/}}
+
+% ============================================================================
+% DEFINICIÓN DE COLORES PERSONALIZADOS
+% ============================================================================
+\definecolor{theoremblue}{RGB}{230,242,255}
+\definecolor{theoremborder}{RGB}{70,130,180}
+\definecolor{definitiongreen}{RGB}{232,250,232}
+\definecolor{definitionborder}{RGB}{34,139,34}
+\definecolor{warningyellow}{RGB}{255,250,220}
+\definecolor{warningborder}{RGB}{218,165,32}
+\definecolor{tipgreen}{RGB}{240,255,240}
+\definecolor{tipborder}{RGB}{60,179,113}
+\definecolor{examplelavender}{RGB}{245,240,255}
+\definecolor{exampleborder}{RGB}{138,43,226}
+\definecolor{notegray}{RGB}{248,248,248}
+\definecolor{noteborder}{RGB}{128,128,128}
+\definecolor{formulablue}{RGB}{240,248,255}
+\definecolor{formulaborder}{RGB}{100,149,237}
+
+% ============================================================================
+% CAJAS DE COLORES (TCOLORBOX)
+% ============================================================================
+
+% Caja para Conceptos Clave
+\newtcolorbox{concepto}[1][]{
+    enhanced,
+    colback=theoremblue,
+    colframe=theoremborder,
+    fonttitle=\bfseries\large,
+    coltitle=white,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=theoremborder,sharp corners},
+    sharp corners=south,
+    rounded corners=north,
+    breakable,
+    title={\raisebox{-0.2em}{\Large$\diamond$} Concepto Clave},
+    #1
+}
+
+% Caja para Definiciones
+\newtcolorbox{definicion}[1][]{
+    enhanced,
+    colback=definitiongreen,
+    colframe=definitionborder,
+    fonttitle=\bfseries\large,
+    coltitle=white,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=definitionborder,sharp corners},
+    sharp corners=south,
+    rounded corners=north,
+    breakable,
+    title={\raisebox{-0.1em}{\Large$\triangleright$} Definición},
+    #1
+}
+
+% Caja para Fórmulas
+\newtcolorbox{formula}[1][]{
+    enhanced,
+    colback=formulablue,
+    colframe=formulaborder,
+    fonttitle=\bfseries,
+    coltitle=white,
+    attach boxed title to top center={yshift=-3mm},
+    boxed title style={colback=formulaborder,sharp corners},
+    sharp corners,
+    breakable,
+    title={\Large$\Sigma$~Fórmula},
+    #1
+}
+
+% Caja para Advertencias
+\newtcolorbox{advertencia}[1][]{
+    enhanced,
+    colback=warningyellow,
+    colframe=warningborder,
+    fonttitle=\bfseries\large,
+    coltitle=black,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=warningborder,sharp corners},
+    sharp corners=south,
+    rounded corners=north,
+    breakable,
+    title={\raisebox{-0.1em}{\Large$\triangle$} Importante},
+    #1
+}
+
+% Caja para Hallazgos
+\newtcolorbox{hallazgo}[1][]{
+    enhanced,
+    colback=white,
+    colframe=NavyBlue,
+    fonttitle=\bfseries,
+    coltitle=white,
+    attach boxed title to top center={yshift=-3mm},
+    boxed title style={colback=NavyBlue,sharp corners},
+    sharp corners,
+    breakable,
+    boxrule=2pt,
+    title={\large$\checkmark$~Hallazgo Clave},
+    #1
+}
+
+% Caja para Notas
+\newtcolorbox{nota}[1][]{
+    enhanced,
+    colback=notegray,
+    colframe=noteborder,
+    fonttitle=\bfseries\small,
+    coltitle=black,
+    left=5pt,right=5pt,top=3pt,bottom=3pt,
+    sharp corners,
+    breakable,
+    title={Nota:},
+    #1
+}
+
+% Caja para Resultados del Análisis
+\newtcolorbox{resultado}[1][]{
+    enhanced,
+    colback=examplelavender,
+    colframe=exampleborder,
+    fonttitle=\bfseries,
+    coltitle=white,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=exampleborder,sharp corners},
+    breakable,
+    title={\raisebox{-0.1em}{\large$\circledcirc$} Resultado},
+    #1
+}
+
+% ============================================================================
+% INICIO DEL DOCUMENTO
+% ============================================================================
+\begin{document}
+\onehalfspacing
+
+% ============================================================================
+% PORTADA
+% ============================================================================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    % Decoración superior
+    \begin{tikzpicture}[remember picture,overlay]
+        \fill[NavyBlue] (current page.north west) rectangle ([yshift=-4cm]current page.north east);
+        \node[anchor=north,yshift=-1.5cm] at (current page.north) {
+            \textcolor{white}{\Huge\bfseries AlphaTech Analyzer}
+        };
+        \node[anchor=north,yshift=-3cm] at (current page.north) {
+            \textcolor{white!80}{\large Proyecto de Análisis Estadístico Financiero}
+        };
+    \end{tikzpicture}
+    
+    \vspace{4cm}
+    
+    {\Huge\bfseries\textcolor{NavyBlue}{Informe Estadístico}}\\[0.8cm]
+    {\LARGE Análisis Cuantitativo del Sector Tecnológico}\\[0.3cm]
+    {\Large\textcolor{gray}{NASDAQ-100 | 2018--2024}}\\[1.5cm]
+    
+    % Línea decorativa
+    \begin{tikzpicture}
+        \draw[NavyBlue,line width=2pt] (0,0) -- (10,0);
+        \fill[NavyBlue] (5,0) circle (4pt);
+    \end{tikzpicture}
+    
+    \vspace{1.5cm}
+    
+    % Cuadro de información
+    \begin{tcolorbox}[
+        enhanced,
+        colback=NavyBlue!5,
+        colframe=NavyBlue,
+        width=0.85\textwidth,
+        sharp corners,
+        boxrule=1pt
+    ]
+    \centering
+    \begin{tabular}{rl}
+        \textcolor{NavyBlue}{\textbf{Universo de análisis:}} & 30 empresas tecnológicas NASDAQ-100 \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Período temporal:}} & Febrero 2018 -- Diciembre 2024 \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Frecuencia de datos:}} & Mensual (hasta 83 observaciones por empresa) \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Variables principales:}} & Precio Ajustado, Volumen, Retorno Log. \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Observaciones totales:}} & 2,403 registros \\
+    \end{tabular}
+    \end{tcolorbox}
+    
+    \vfill
+    
+    % Pie de portada
+    \begin{tikzpicture}[remember picture,overlay]
+        \fill[NavyBlue!10] (current page.south west) rectangle ([yshift=2cm]current page.south east);
+        \node[anchor=south,yshift=0.8cm] at (current page.south) {
+            \textcolor{NavyBlue}{\large Universidad de La Habana --- Facultad de Matemática y Computación (MATCOM)}
+        };
+    \end{tikzpicture}
+    
+\end{titlepage}
+
+% ============================================================================
+% ÍNDICE
+% ============================================================================
+\tableofcontents
+\newpage
+
+% ============================================================================
+% RESUMEN EJECUTIVO
+% ============================================================================
+\section*{Resumen Ejecutivo}
+\addcontentsline{toc}{section}{Resumen Ejecutivo}
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Visión General del Estudio,
+    sharp corners
+]
+Este informe presenta un análisis estadístico exhaustivo de \textbf{30 empresas del sector tecnológico} pertenecientes al índice NASDAQ-100 durante el período \textbf{febrero 2018 -- diciembre 2024}. El estudio comprende \textbf{2,403 observaciones mensuales} y abarca desde la exploración inicial de los datos hasta análisis de riesgo, correlación y cambio estructural asociado a la pandemia de COVID-19.
+\end{tcolorbox}
+
+\vspace{0.5cm}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{hallazgo}[title=Principales Hallazgos]
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+    \item[\cmark] El 73.3\% de empresas presenta \textbf{colas pesadas} (leptocurtosis)
+    \item[\cmark] Correlación promedio de $\rho = 0.40$, máxima de $\rho = 0.72$
+    \item[\cmark] El 10.7\% de empresas muestra \textbf{cambio estructural} post-COVID
+    \item[\cmark] Tesla y Nvidia con MDD superior al 60\%
+\end{itemize}
+\end{hallazgo}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{advertencia}[title=Implicaciones Prácticas]
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+    \item[\wmark] Modelos gaussianos \textbf{subestiman} riesgos de cola
+    \item[\wmark] Diversificación intra-sectorial tiene \textbf{beneficio limitado}
+    \item[\wmark] Gestión de riesgo debe incorporar \textbf{métricas de drawdown}
+    \item[\wmark] Análisis de régimen es \textbf{esencial} en contextos de crisis
+\end{itemize}
+\end{advertencia}
+\end{minipage}
+
+\newpage
+
+% ============================================================================
+% SECCIÓN 1: ANÁLISIS EXPLORATORIO DE DATOS
+% ============================================================================
+\section{Análisis Exploratorio de Datos (EDA)}
+
+\begin{concepto}
+El \textbf{Análisis Exploratorio de Datos} (EDA, \textit{Exploratory Data Analysis}) constituye el pilar fundamental de cualquier investigación estadística rigurosa. Introducido por John W. Tukey en su obra seminal \textit{Exploratory Data Analysis} (Addison-Wesley, 1977), este enfoque metodológico prioriza la comprensión profunda de los datos antes de aplicar modelos formales.
+
+\vspace{0.3cm}
+\textit{``El análisis exploratorio es trabajo detectivesco numérico --- o conteo, o representación gráfica. [...] Los gráficos son esenciales.''}
+
+\hfill --- \textbf{J. W. Tukey}, \textit{Exploratory Data Analysis}, p. 1
+\end{concepto}
+
+En el contexto del análisis financiero cuantitativo, el EDA cumple funciones críticas:
+
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em]
+    \item \textbf{Validación de integridad}: Identificación de valores faltantes, inconsistencias y errores de captura que podrían comprometer análisis posteriores.
+    \item \textbf{Caracterización distribucional}: Evaluación de momentos estadísticos, detección de asimetrías y cuantificación de comportamientos extremos.
+    \item \textbf{Descubrimiento de patrones}: Revelación de estructuras de correlación, dependencias temporales y agrupamientos naturales.
+    \item \textbf{Verificación de supuestos}: Contraste empírico de hipótesis requeridas por modelos paramétricos (normalidad, homocedasticidad, estacionariedad).
+\end{enumerate}
+
+% ----------------------------------------------------------------------------
+\subsection{Estructura del Conjunto de Datos}
+% ----------------------------------------------------------------------------
+
+El estudio se fundamenta en un \textbf{panel de datos} (datos longitudinales) que combina la dimensión temporal con la transversal, permitiendo capturar tanto la evolución individual de cada empresa como las dinámicas comunes del sector.
+
+\begin{definicion}[title=Panel de Datos]
+Un \textbf{panel de datos} (también denominado datos longitudinales) es una estructura que combina:
+\begin{itemize}
+    \item \textbf{Dimensión transversal}: Múltiples entidades (empresas, individuos, países)
+    \item \textbf{Dimensión temporal}: Observaciones repetidas en el tiempo
+\end{itemize}
+
+Formalmente, para $N$ entidades observadas en $T$ períodos, el panel contiene $N \times T$ observaciones potenciales. Cuando todas las combinaciones están presentes, se denomina \textbf{panel balanceado}.
+\end{definicion}
+
+\begin{table}[H]
+\centering
+\caption{Estructura del Panel de Datos Analizado}
+\begin{tabular}{lll}
+\toprule
+\textbf{Característica} & \textbf{Valor} & \textbf{Descripción} \\
+\midrule
+Empresas ($N$) & 30 & Tecnológicas NASDAQ-100 \\
+Período & Feb 2018 -- Dic 2024 & Aproximadamente 7 años \\
+Frecuencia & Mensual & Último día hábil de cada mes \\
+Observaciones & 2,403 & Panel desbalanceado (4 empresas con IPO posterior) \\
+\midrule
+\multicolumn{3}{l}{\textbf{Variables del Panel:}} \\
+\quad Date & datetime & Fecha de observación \\
+\quad Company & string & Identificador de empresa \\
+\quad AdjClose & float (USD) & Precio ajustado por dividendos/splits \\
+\quad Volume & int & Volumen mensual negociado \\
+\quad Return & float & Retorno logarítmico mensual \\
+\bottomrule
+\end{tabular}
+\label{tab:panel_description}
+\end{table}
+
+\begin{formula}[title=Retorno Logarítmico]
+El retorno logarítmico (también denominado retorno continuo) se define como:
+\begin{equation}
+r_t = \ln\left(\frac{P_t}{P_{t-1}}\right) = \ln(P_t) - \ln(P_{t-1})
+\end{equation}
+
+donde $P_t$ representa el precio ajustado en el período $t$. Esta transformación presenta ventajas sobre los retornos simples:
+
+\begin{itemize}
+    \item \textbf{Aditividad temporal}: $r_{t \to t+n} = \sum_{i=0}^{n-1} r_{t+i}$
+    \item \textbf{Simetría}: Movimientos equivalentes producen retornos simétricos
+    \item \textbf{Propiedades estadísticas}: Distribución más próxima a la normal
+\end{itemize}
+\end{formula}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Valores Faltantes}
+% ----------------------------------------------------------------------------
+
+La presencia de datos ausentes constituye una problemática ubicua en el análisis empírico. Su tratamiento inadecuado puede introducir sesgos sistemáticos y comprometer la validez de las inferencias estadísticas.
+
+\begin{concepto}[title={Taxonomía de Datos Faltantes}]
+La literatura estadística, fundamentada en el trabajo de Donald B. Rubin (\textit{Biometrika}, 1976), distingue tres mecanismos generadores de datos ausentes:
+
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{MCAR} (\textit{Missing Completely At Random}): La probabilidad de ausencia es independiente de cualquier variable. Representa el escenario más favorable.
+    \[P(M|Y_{obs}, Y_{miss}) = P(M)\]
+    
+    \item \textbf{MAR} (\textit{Missing At Random}): La probabilidad depende únicamente de variables observadas.
+    \[P(M|Y_{obs}, Y_{miss}) = P(M|Y_{obs})\]
+    
+    \item \textbf{MNAR} (\textit{Missing Not At Random}): La probabilidad depende del propio valor no observado. Genera sesgo difícil de corregir.
+\end{enumerate}
+
+En mercados financieros, las causas típicas incluyen: feriados bursátiles, suspensiones de cotización, IPOs posteriores al inicio del período.
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{missing_values_pattern.png}
+    \caption{Matriz de completitud del dataset. Cada fila representa una observación temporal y cada columna una variable. Las áreas sólidas indican datos presentes; franjas blancas revelarían patrones de ausencia. El dataset analizado presenta alta completitud.}
+    \label{fig:missing_values}
+\end{figure}
+
+\begin{resultado}
+El análisis de valores faltantes del panel revela:
+\begin{itemize}
+    \item \textbf{Todas las columnas}: 0\% de datos faltantes (Company, Ticker, Date, AdjClose, Volume, Return)
+    \item \textbf{Empresas con menos de 83 observaciones}: Palantir (51), Snowflake (51), Cloudflare (63), Spotify (80)
+    \item \textbf{Causa}: IPOs posteriores al inicio del período de análisis (no datos faltantes, sino inexistentes)
+\end{itemize}
+El dataset presenta \textbf{calidad excelente} para análisis sin necesidad de imputación.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Distribución de Retornos Financieros}
+% ----------------------------------------------------------------------------
+
+La caracterización distribucional de los retornos constituye un pilar fundamental del análisis financiero cuantitativo. Las propiedades de esta distribución determinan la validez de modelos de valoración y métricas de riesgo.
+
+\begin{concepto}[title=Hechos Estilizados de Retornos Financieros]
+La investigación empírica, documentada extensamente por Cont (\textit{Quantitative Finance}, 2001) y Campbell, Lo \& MacKinlay (\textit{The Econometrics of Financial Markets}, Princeton, 1997), ha identificado regularidades que distinguen los retornos financieros de la distribución normal:
+
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{Colas pesadas} (\textit{fat tails} / leptocurtosis): Eventos extremos de $\pm 4\sigma$ o más ocurren con frecuencia significativamente mayor a la predicha por la normal.
+    
+    \item \textbf{Asimetría negativa}: Las caídas abruptas tienden a ser más pronunciadas que las subidas equivalentes, especialmente durante episodios de estrés.
+    
+    \item \textbf{Agrupamiento de volatilidad} (\textit{volatility clustering}): Períodos de alta volatilidad tienden a persistir. Formalizado en modelos ARCH/GARCH (Engle, 1982; Bollerslev, 1986).
+    
+    \item \textbf{Efecto apalancamiento}: Correlación negativa entre retornos y volatilidad futura; las caídas incrementan la volatilidad más que subidas equivalentes.
+\end{enumerate}
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{return_distribution.png}
+    \caption{Distribución empírica de retornos mensuales del panel. El histograma representa la frecuencia observada; la curva KDE (\textit{Kernel Density Estimation}) suaviza la distribución. Se observa la característica forma leptocúrtica con colas más pesadas que la normal.}
+    \label{fig:return_distribution}
+\end{figure}
+
+\begin{nota}
+La distribución agregada de los 2,403 retornos mensuales presenta las siguientes características:
+\begin{itemize}
+    \item \textbf{Media}: $\mu = 1.53\%$ mensual
+    \item \textbf{Volatilidad}: $\sigma = 10.84\%$ mensual
+    \item \textbf{Asimetría global}: $\gamma_1 = 0.28$ (sesgo positivo leve)
+    \item \textbf{Curtosis global}: $\gamma_2 = 5.43$ (leptocurtosis pronunciada)
+\end{itemize}
+La curtosis de 5.43 implica colas significativamente más pesadas que la distribución normal ($\gamma_2 = 0$), confirmando que los modelos gaussianos subestiman la probabilidad de eventos extremos.
+\end{nota}
+
+\begin{definicion}[title={Estimación de Densidad Kernel (KDE)}]
+La KDE es un método no paramétrico para estimar la función de densidad de probabilidad:
+\begin{equation}
+\hat{f}_h(x) = \frac{1}{nh}\sum_{i=1}^{n}K\left(\frac{x-x_i}{h}\right)
+\end{equation}
+
+donde $K(\cdot)$ es una función kernel (típicamente gaussiana) y $h$ es el parámetro de ancho de banda (\textit{bandwidth}). A diferencia del histograma, la KDE produce estimaciones continuas y diferenciables.
+\end{definicion}
+
+\subsubsection{Distribución por Empresa: Análisis Comparativo}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{returns_by_company.png}
+    \caption{Diagramas de caja (boxplots) de retornos logarítmicos mensuales por empresa. Cada boxplot sintetiza: mediana (línea central), cuartiles (bordes), rango IQR extendido (bigotes) y outliers (puntos). La línea de referencia en cero facilita identificar sesgo.}
+    \label{fig:returns_boxplot}
+\end{figure}
+
+\begin{formula}[title={Anatomía del Diagrama de Caja (Tukey, 1977)}]
+El boxplot codifica visualmente la distribución mediante:
+\begin{align}
+\text{Mediana} &= Q_2 = \text{Percentil}_{50} \\
+\text{Rango Intercuartílico} &: IQR = Q_3 - Q_1 \\
+\text{Bigote inferior} &= Q_1 - 1.5 \times IQR \\
+\text{Bigote superior} &= Q_3 + 1.5 \times IQR \\
+\text{Outliers} &: x \notin [Q_1 - 1.5 \cdot IQR, \; Q_3 + 1.5 \cdot IQR]
+\end{align}
+
+El factor 1.5 corresponde a la propuesta original de Tukey; para outliers extremos se utiliza factor 3.0.
+\end{formula}
+
+\subsubsection{Volatilidad por Empresa}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{volatility_by_company.png}
+    \caption{Volatilidad mensual (desviación estándar de retornos) por empresa, ordenada de mayor a menor. La línea horizontal indica la mediana sectorial. Empresas como Tesla y Nvidia exhiben volatilidad significativamente superior al promedio.}
+    \label{fig:volatility}
+\end{figure}
+
+\begin{definicion}[title=Volatilidad Histórica]
+La volatilidad representa la dispersión de los retornos y constituye la métrica de riesgo más utilizada en finanzas. Según Hull (\textit{Options, Futures, and Other Derivatives}, Pearson, 2018), la volatilidad histórica se estima como:
+\begin{equation}
+\sigma = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N}(r_i - \bar{r})^2}
+\end{equation}
+
+Esta métrica está fundamentada en la Teoría Moderna de Portafolios, que asume inversores aversos al riesgo que prefieren menor variabilidad para un mismo retorno esperado.
+\end{definicion}
+
+\begin{advertencia}[title=Limitaciones de la Volatilidad como Métrica de Riesgo]
+La desviación estándar presenta deficiencias importantes:
+\begin{itemize}
+    \item \textbf{Simetría implícita}: Penaliza igualmente ganancias y pérdidas inesperadas
+    \item \textbf{Supuesto de normalidad}: Subestima eventos extremos en distribuciones leptocúrticas
+    \item \textbf{Mirada retrospectiva}: Volatilidad histórica no predice necesariamente la futura
+\end{itemize}
+Métricas complementarias: Value at Risk (VaR), Expected Shortfall (CVaR), Maximum Drawdown.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Relación Riesgo-Retorno}
+% ----------------------------------------------------------------------------
+
+La relación entre riesgo y retorno esperado constituye el axioma central de las finanzas modernas.
+
+\begin{concepto}[title={Frontera Eficiente}]
+Harry M. Markowitz formalizó el problema de selección de portafolios como optimización media-varianza en su artículo \textit{``Portfolio Selection''} (\textit{The Journal of Finance}, Vol. 7, No. 1, 1952, pp. 77--91), trabajo por el cual recibió el Premio Nobel de Economía en 1990. La \textbf{frontera eficiente} representa el conjunto de portafolios que maximizan retorno para cada nivel de riesgo.
+
+Para un portafolio de dos activos:
+\begin{equation}
+\sigma_p^2 = w_1^2\sigma_1^2 + w_2^2\sigma_2^2 + 2w_1w_2\sigma_1\sigma_2\rho_{12}
+\end{equation}
+
+El término $2w_1w_2\sigma_1\sigma_2\rho_{12}$ es la fuente del beneficio de diversificación cuando $\rho_{12} < 1$.
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{risk_return_relation.png}
+    \caption{Diagrama de dispersión riesgo-retorno. Cada punto representa una empresa; el tamaño es proporcional al volumen promedio (proxy de liquidez). Las líneas punteadas segmentan el espacio según mediana de volatilidad y retorno cero.}
+    \label{fig:risk_return}
+\end{figure}
+
+% Diagrama de cuadrantes
+\begin{center}
+\begin{tikzpicture}[scale=0.85,
+    cuadrante/.style={draw,minimum width=4.2cm,minimum height=2.3cm,align=center,font=\small}
+]
+    \node[cuadrante,fill=ForestGreen!20] (q1) at (-2.5,1.5) {\textbf{ÓPTIMO}\\Alto Retorno\\Baja Volatilidad};
+    \node[cuadrante,fill=Orange!20] (q2) at (2.5,1.5) {\textbf{AGRESIVO}\\Alto Retorno\\Alta Volatilidad};
+    \node[cuadrante,fill=SkyBlue!20] (q3) at (-2.5,-1.5) {\textbf{CONSERVADOR}\\Bajo Retorno\\Baja Volatilidad};
+    \node[cuadrante,fill=Crimson!20] (q4) at (2.5,-1.5) {\textbf{INEFICIENTE}\\Bajo Retorno\\Alta Volatilidad};
+    
+    \draw[-{Stealth},thick] (-5,0) -- (5,0) node[right] {Volatilidad $\sigma$};
+    \draw[-{Stealth},thick] (0,-3) -- (0,3) node[above] {Retorno $\mu$};
+\end{tikzpicture}
+\end{center}
+
+\begin{formula}[title=Ratio de Sharpe]
+El ratio de Sharpe cuantifica el exceso de retorno por unidad de riesgo:
+\begin{equation}
+\text{Sharpe Ratio} = \frac{E[R_p] - R_f}{\sigma_p}
+\end{equation}
+donde $R_f$ es la tasa libre de riesgo. Valores $> 1.0$ se consideran atractivos; $> 2.0$, excelentes.
+\end{formula}
+
+% ----------------------------------------------------------------------------
+\subsection{Evolución Temporal de Precios}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title={Precio Ajustado (\textit{Adjusted Close})}]
+El precio ajustado incorpora correcciones retroactivas por eventos corporativos:
+\begin{itemize}
+    \item \textbf{Dividendos}: El precio ex-dividendo cae por el monto distribuido; el ajuste redistribuye hacia atrás
+    \item \textbf{Splits}: Una división 2:1 reduce el precio a la mitad; los históricos se ajustan proporcionalmente
+    \item \textbf{Derechos y spin-offs}: Otras acciones que modifican acciones en circulación
+\end{itemize}
+El uso del precio ajustado es \textbf{imperativo} para calcular retornos totales reales.
+\end{definicion}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{microsoft_price_evolution.png}
+    \caption{Evolución del precio ajustado de Microsoft (MSFT) 2018--2024. El área sombreada facilita visualización de tendencia. Se observan correcciones durante COVID-19 crash (marzo 2020) y tech selloff (2022).}
+    \label{fig:microsoft_price}
+\end{figure}
+
+\subsubsection{Series Normalizadas: Comparación Multi-Activo}
+
+\begin{formula}[title=Normalización Base 100]
+Para comparar activos con precios en escalas dispares:
+\begin{equation}
+P^{norm}_t = \frac{P_t}{P_0} \times 100
+\end{equation}
+
+Interpretación:
+\begin{itemize}
+    \item $P^{norm}_t = 150 \Rightarrow$ Rendimiento acumulado +50\%
+    \item $P^{norm}_t = 75 \Rightarrow$ Pérdida acumulada -25\%
+\end{itemize}
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{series_normalizadas.png}
+    \caption{Series de precios normalizadas (Base 100) para principales empresas tecnológicas. Líneas verticales marcan COVID-19 crash (marzo 2020) y Tech Selloff (2022). La divergencia revela heterogeneidad de desempeño.}
+    \label{fig:series_norm}
+\end{figure}
+
+\begin{resultado}
+El análisis de rendimiento total durante el período Feb 2018 -- Dic 2024 (6.92 años) revela:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Empresa} & \textbf{Rendimiento Total} & \textbf{CAGR} \\
+\midrule
+Nvidia & +2,196.0\% & 57.3\% \\
+Tesla & +1,725.1\% & 52.2\% \\
+Apple & +499.4\% & 29.6\% \\
+Microsoft & +386.7\% & 25.7\% \\
+Alphabet & +247.7\% & 19.7\% \\
+Meta Platforms & +232.8\% & 19.0\% \\
+Amazon & +192.6\% & 16.8\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Nvidia y Tesla destacan con rendimientos excepcionales superiores a 1,700\%, impulsados por el auge de IA y vehículos eléctricos.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Correlación}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Diversificación y Correlación]
+El principio de diversificación establece que combinar activos imperfectamente correlacionados reduce el riesgo sin sacrificar retorno:
+
+\begin{equation}
+\sigma_p^2 = \sum_i w_i^2\sigma_i^2 + \sum_i \sum_{j \neq i} w_i w_j \sigma_i \sigma_j \rho_{ij}
+\end{equation}
+
+El beneficio de diversificación surge cuando $\rho_{ij} < 1$. Máximo beneficio con $\rho < 0$.
+\end{concepto}
+
+\begin{formula}[title=Coeficiente de Correlación de Pearson]
+\begin{equation}
+\rho_{ij} = \frac{\text{Cov}(R_i, R_j)}{\sigma_i \cdot \sigma_j} = \frac{\sum_{t=1}^{T}(R_{i,t} - \bar{R}_i)(R_{j,t} - \bar{R}_j)}{\sqrt{\sum_{t}(R_{i,t} - \bar{R}_i)^2} \cdot \sqrt{\sum_{t}(R_{j,t} - \bar{R}_j)^2}}
+\end{equation}
+
+El coeficiente $\rho \in [-1, 1]$ mide intensidad y dirección de relación lineal.
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{correlation_heatmap.png}
+    \caption{Matriz de correlación de retornos mensuales entre las 30 empresas. Colores cálidos indican correlaciones positivas altas; colores fríos indican bajas o negativas. Diagonal principal: autocorrelación = 1.}
+    \label{fig:correlation}
+\end{figure}
+
+\begin{resultado}
+El análisis de correlación entre las 30 empresas (435 pares únicos) reveló:
+
+\textbf{Pares con mayor correlación}:
+\begin{enumerate}
+    \item ASML -- Microsoft: $\rho = 0.721$
+    \item Salesforce -- ServiceNow: $\rho = 0.711$
+    \item Adobe -- Microsoft: $\rho = 0.709$
+    \item Amazon -- Microsoft: $\rho = 0.690$
+    \item Accenture -- Microsoft: $\rho = 0.688$
+\end{enumerate}
+
+\textbf{Pares con menor correlación}:
+\begin{enumerate}
+    \item Cloudflare -- IBM: $\rho = -0.147$
+    \item Fortinet -- Tencent: $\rho = -0.125$
+    \item Snowflake -- Tencent: $\rho = 0.001$
+    \item Cloudflare -- Tencent: $\rho = 0.021$
+    \item Accenture -- Tencent: $\rho = 0.024$
+\end{enumerate}
+
+\textbf{Distribución}: Alta ($\rho \geq 0.7$): 3 pares (0.7\%) | Media ($0.4 \leq \rho < 0.7$): 227 pares (52.2\%) | Baja ($\rho < 0.4$): 205 pares (47.1\%)
+\end{resultado}
+
+\begin{advertencia}[title=Correlación Intra-Sectorial]
+El análisis de correlación del panel tecnológico revela:
+\begin{itemize}
+    \item \textbf{Correlación promedio}: $\rho = 0.40$ (excluyendo diagonal)
+    \item \textbf{Rango}: desde $\rho = -0.15$ (Cloudflare--IBM) hasta $\rho = 0.72$ (ASML--Microsoft)
+    \item \textbf{Clasificación}: Solo 3 pares (0.7\%) con correlación alta ($\rho \geq 0.7$)
+\end{itemize}
+Esta correlación moderada \textbf{permite cierto beneficio de diversificación} intra-sectorial, aunque limitado respecto a diversificación entre sectores.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Detección de Valores Atípicos (Outliers)}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Métodos de Detección de Outliers]
+\textbf{Método IQR (Tukey, 1977):}
+\begin{equation}
+\text{Outlier si: } x < Q_1 - 1.5 \times IQR \quad \lor \quad x > Q_3 + 1.5 \times IQR
+\end{equation}
+
+\textbf{Método Z-score:}
+\begin{equation}
+z_i = \frac{x_i - \mu}{\sigma}, \quad \text{Outlier si } |z_i| > 3
+\end{equation}
+
+El método IQR es más robusto (usa cuartiles); Z-score es sensible a outliers en media/std.
+\end{definicion}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{outliers_analysis.png}
+    \caption{Análisis de outliers. Izquierda: Boxplot con outliers como puntos individuales. Derecha: Histograma con límites IQR superpuestos delimitando región típica.}
+    \label{fig:outliers}
+\end{figure}
+
+\begin{resultado}
+La detección de outliers en los retornos del panel reveló:
+\begin{itemize}
+    \item \textbf{Método IQR}: 84 outliers detectados (3.50\% de las observaciones)
+    \item \textbf{Método Z-score ($|z| > 3$)}: 33 outliers detectados (1.37\%)
+    \item \textbf{Límites IQR}: $Q_1 = -4.53\%$, $Q_3 = +7.51\%$, $IQR = 12.04\%$
+    \item \textbf{Rango válido}: $[-22.59\%, +25.57\%]$
+\end{itemize}
+
+\textbf{Outliers más extremos positivos}: Palantir +98.4\% (Nov 2020), Palantir +64.1\% (May 2023), Tesla +55.5\% (Ago 2020).
+
+\textbf{Outliers más extremos negativos}: Netflix $-67.7\%$ (Abr 2022), Tesla $-45.8\%$ (Dic 2022), Cloudflare $-43.1\%$ (May 2022).
+\end{resultado}
+
+\begin{advertencia}[title=Tratamiento de Outliers Financieros]
+\textbf{Los outliers financieros raramente deben eliminarse.} Representan frecuentemente:
+\begin{itemize}
+    \item Eventos legítimos (crashes, rallies, anuncios corporativos)
+    \item Información valiosa sobre riesgo de cola (\textit{tail risk})
+    \item Señales de cambio de régimen
+\end{itemize}
+Eliminarlos subestimaría el riesgo real.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Momentos Estadísticos}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Los Cuatro Momentos de una Distribución]
+\textbf{1. Media} (Primer momento):
+$\mu = E[R]$
+
+\textbf{2. Varianza} (Segundo momento central):
+$\sigma^2 = E[(R - \mu)^2]$
+
+\textbf{3. Asimetría / Skewness} (Tercer momento estandarizado):
+\begin{equation}
+\gamma_1 = E\left[\left(\frac{R - \mu}{\sigma}\right)^3\right]
+\end{equation}
+$\gamma_1 < 0$: Sesgo negativo (cola izquierda más larga)
+
+\textbf{4. Curtosis} (Cuarto momento estandarizado):
+\begin{equation}
+\gamma_2 = E\left[\left(\frac{R - \mu}{\sigma}\right)^4\right] - 3
+\end{equation}
+$\gamma_2 > 0$: Leptocúrtica (colas pesadas, eventos extremos frecuentes)
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{qq_plot_returns.png}
+    \caption{Gráfico Q-Q comparando cuantiles empíricos con normal teórica. Puntos sobre diagonal indicarían normalidad. Desviaciones en colas revelan leptocurtosis característica.}
+    \label{fig:qq_plot}
+\end{figure}
+
+\begin{formula}[title={Test de Jarque-Bera}]
+Propuesto por Carlos M. Jarque y Anil K. Bera (\textit{International Statistical Review}, 1987), este test evalúa conjuntamente asimetría y curtosis para contrastar normalidad:
+\begin{equation}
+JB = \frac{n}{6}\left(\gamma_1^2 + \frac{\gamma_2^2}{4}\right)
+\end{equation}
+
+Bajo $H_0$ (normalidad), $JB \sim \chi^2(2)$. Si el p-valor $< 0.05$, se rechaza la hipótesis de normalidad al 5\% de significancia.
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{distribution_analysis.png}
+    \caption{Análisis distribucional. Evaluación de asimetría, curtosis y desviación respecto a normalidad para el conjunto de empresas.}
+    \label{fig:distribution}
+\end{figure}
+
+\begin{hallazgo}
+El análisis de momentos estadísticos del panel tecnológico revela:
+\begin{itemize}
+    \item \textbf{Asimetría promedio}: $\gamma_1 = -0.15$ (sesgo negativo leve)
+    \item \textbf{Curtosis promedio}: $\gamma_2 = 1.06$ (exceso de curtosis, colas pesadas)
+    \item \textbf{Leptocurtosis}: 22 de 30 empresas (73.3\%) presentan $\gamma_2 > 0$
+    \item \textbf{Normalidad}: 10 de 30 empresas (33.3\%) rechazan normalidad (Test Jarque-Bera, $\alpha = 0.05$)
+\end{itemize}
+La empresa con mayor curtosis es \textbf{Netflix} ($\gamma_2 = 10.16$), seguida de SAP ($\gamma_2 = 3.63$) y Palantir ($\gamma_2 = 2.97$). Las empresas que rechazan normalidad son: Meta, Taiwan Semiconductor, Netflix, IBM, Palantir, Intel, Broadcom, SAP, Infosys y Snowflake.
+\end{hallazgo}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Drawdown}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Drawdown y Maximum Drawdown]
+El drawdown cuantifica la caída desde máximos históricos:
+\begin{equation}
+DD_t = \frac{P_t - \max_{s \leq t} P_s}{\max_{s \leq t} P_s} \times 100\%
+\end{equation}
+
+El \textbf{Maximum Drawdown (MDD)} es la peor caída observada:
+\begin{equation}
+MDD = \min_{t} DD_t
+\end{equation}
+
+Propiedades: $DD_t \leq 0$ siempre; $DD_t = 0$ en máximo histórico.
+\end{definicion}
+
+\begin{advertencia}[title=Asimetría de la Recuperación]
+Las pérdidas requieren ganancias proporcionalmente mayores para recuperarse:
+
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+\textbf{Pérdida} & \textbf{Ganancia para recuperar} \\
+\midrule
+-10\% & +11.1\% \\
+-25\% & +33.3\% \\
+-50\% & +100\% \\
+-75\% & +300\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Por esto la gestión del riesgo de caída es más importante que maximizar retorno.
+\end{advertencia}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{drawdown_analysis.png}
+    \caption{Series de drawdown para empresas seleccionadas (Tesla, Nvidia, Apple, Microsoft). Área roja: magnitud del drawdown. Líneas horizontales: umbrales $-20\%$ (corrección) y $-50\%$ (crisis).}
+    \label{fig:drawdown}
+\end{figure}
+
+\begin{resultado}
+El análisis de Maximum Drawdown (MDD) para las empresas principales reveló:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Empresa} & \textbf{MDD} & \textbf{Tiempo bajo agua} & \textbf{Retorno para recuperar} \\
+\midrule
+Tesla & $-67.72\%$ & 67 meses (80.7\%) & +209.8\% \\
+Nvidia & $-62.82\%$ & 54 meses (65.1\%) & +169.0\% \\
+Microsoft & $-30.53\%$ & 48 meses (57.8\%) & +43.9\% \\
+Apple & $-30.46\%$ & 56 meses (67.5\%) & +43.8\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Las empresas de alto crecimiento (Tesla, Nvidia) experimentaron caídas superiores al 60\%, mientras que las empresas maduras (Apple, Microsoft) limitaron sus pérdidas máximas a aproximadamente 30\%.
+\end{resultado}
+
+\begin{formula}[title=Calmar Ratio]
+Mide eficiencia del retorno ajustada por riesgo de pérdida máxima:
+\begin{equation}
+\text{Calmar Ratio} = \frac{CAGR}{|MDD|}
+\end{equation}
+donde $CAGR$ es Tasa de Crecimiento Anual Compuesta. Ratio $> 1$: excelente.
+\end{formula}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Cambio Estructural: Pre/Post COVID-19}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Análisis de Regímenes]
+La pandemia afectó los mercados tecnológicos a través de múltiples canales:
+
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{Shock inicial}: Caída abrupta marzo 2020 ante parálisis económica
+    \item \textbf{Transformación digital}: Trabajo remoto, e-commerce, cloud beneficiaron al sector
+    \item \textbf{Política monetaria}: Tasas cercanas a cero impulsaron valuaciones
+    \item \textbf{Reversión 2022}: Normalización monetaria y corrección de excesos
+\end{enumerate}
+
+División temporal: \textbf{Pre-COVID} (Ene 2018 -- Feb 2020) vs \textbf{Post-COVID} (Mar 2020 -- Dic 2024)
+\end{concepto}
+
+\begin{formula}[title=Tests de Comparación]
+\textbf{Test t de Welch} (medias con varianzas desiguales):
+\begin{equation}
+t = \frac{\bar{R}_{post} - \bar{R}_{pre}}{\sqrt{\frac{s_{post}^2}{n_{post}} + \frac{s_{pre}^2}{n_{pre}}}}
+\end{equation}
+
+\textbf{Test de Levene}: Homogeneidad de varianzas. $H_0$: $\sigma^2_{pre} = \sigma^2_{post}$
+
+P-valor $< 0.05$ indica cambio estadísticamente significativo.
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{covid_period_comparison.png}
+    \caption{Cambios en retorno medio y volatilidad (Post-COVID vs Pre-COVID). Verde: mejora; Rojo: deterioro.}
+    \label{fig:covid_comparison}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{risk_return_periods.png}
+    \caption{Diagrama riesgo-retorno segmentado por período. Visualización de migración en el espacio riesgo-retorno tras shock pandémico.}
+    \label{fig:risk_return_periods}
+\end{figure}
+
+\begin{hallazgo}
+El análisis de cambio estructural pre/post COVID-19 revela:
+\begin{itemize}
+    \item \textbf{Retorno medio}: 19 de 30 empresas (63.3\%) mejoraron post-COVID
+    \item \textbf{Volatilidad}: 24 de 30 empresas (80.0\%) aumentaron volatilidad post-COVID
+    \item \textbf{Pre-COVID} (677 obs.): Retorno medio promedio 1.07\%, volatilidad promedio 8.40\%
+    \item \textbf{Post-COVID} (1,726 obs.): Retorno medio promedio 1.72\%, volatilidad promedio 11.01\%
+    \item \textbf{Test de Welch}: Ninguna empresa (0\%) muestra cambio significativo en media ($\alpha = 0.05$)
+    \item \textbf{Test de Levene}: Solo 3 empresas (10.7\%) --- ASML, Salesforce, Adobe --- muestran cambio significativo en varianza ($\alpha = 0.05$)
+\end{itemize}
+El COVID-19 representó un punto de quiebre estructural para \textbf{algunas} empresas del sector, principalmente en términos de volatilidad más que en retorno promedio.
+\end{hallazgo}
+
+\begin{nota}
+\textbf{Empresas con mayor mejora post-COVID}: Nvidia (+4.80\% mensual), Broadcom (+3.25\%), Spotify (+2.80\%), Oracle (+2.26\%).
+
+\textbf{Empresas con peor desempeño post-COVID}: Intel ($-2.36\%$ mensual), Adobe ($-1.75\%$), ServiceNow ($-1.09\%$).
+
+La ausencia de cambios estadísticamente significativos en media (Test de Welch) se debe a la alta variabilidad intra-período que domina sobre las diferencias entre períodos.
+\end{nota}
+
+% ----------------------------------------------------------------------------
+\subsection{Síntesis del Análisis Exploratorio}
+% ----------------------------------------------------------------------------
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Conclusiones del Análisis Exploratorio,
+    sharp corners,
+    boxrule=1.5pt
+]
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em]
+    \item \textbf{Calidad de datos}: Dataset con 0\% de valores faltantes en todas las columnas. Cuatro empresas (Palantir, Snowflake, Cloudflare, Spotify) con menos de 83 observaciones debido a IPOs posteriores a febrero 2018.
+    
+    \item \textbf{Distribución de retornos}: El 73.3\% de empresas presenta leptocurtosis ($\gamma_2 > 0$). Asimetría promedio de $-0.15$ y curtosis promedio de $1.06$. Netflix destaca con curtosis extrema ($\gamma_2 = 10.16$).
+    
+    \item \textbf{Outliers}: 3.50\% de observaciones clasificadas como outliers (método IQR). Eventos extremos concentrados en 2020 (COVID crash/rally) y 2022 (tech selloff).
+    
+    \item \textbf{Correlación}: Promedio $\rho = 0.40$, con rango $[-0.15, 0.72]$. Solo 3 pares con $\rho \geq 0.7$ (ASML--Microsoft, Salesforce--ServiceNow, Adobe--Microsoft).
+    
+    \item \textbf{Drawdowns}: Tesla ($-67.72\%$) y Nvidia ($-62.82\%$) con MDD superiores al 60\%. Apple y Microsoft limitaron pérdidas máximas a $\approx 30\%$.
+    
+    \item \textbf{Impacto COVID-19}: 63.3\% de empresas mejoraron retorno medio post-COVID, pero 80.0\% aumentaron volatilidad. Ninguna empresa muestra cambio significativo en media (Test de Welch), pero 3 empresas (ASML, Salesforce, Adobe) muestran cambio significativo en varianza (Test de Levene).
+\end{enumerate}
+\end{tcolorbox}
+
+% ============================================================================
+% BIBLIOGRAFÍA
+% ============================================================================
+\newpage
+\section*{Referencias Bibliográficas}
+\addcontentsline{toc}{section}{Referencias Bibliográficas}
+
+\begin{enumerate}[label={[\arabic*]},leftmargin=2em]
+    \item Campbell, J. Y., Lo, A. W., \& MacKinlay, A. C. (1997). \textit{The Econometrics of Financial Markets}. Princeton University Press. ISBN: 978-0691043012.
+    
+    \item Cont, R. (2001). Empirical properties of asset returns: stylized facts and statistical issues. \textit{Quantitative Finance}, 1(2), 223--236. DOI: 10.1080/713665670.
+    
+    \item Hull, J. C. (2018). \textit{Options, Futures, and Other Derivatives} (10th ed.). Pearson Education. ISBN: 978-0134472089.
+    
+    \item Jarque, C. M., \& Bera, A. K. (1987). A test for normality of observations and regression residuals. \textit{International Statistical Review}, 55(2), 163--172. DOI: 10.2307/1403192.
+    
+    \item Markowitz, H. (1952). Portfolio Selection. \textit{The Journal of Finance}, 7(1), 77--91. DOI: 10.2307/2975974.
+    
+    \item Rubin, D. B. (1976). Inference and missing data. \textit{Biometrika}, 63(3), 581--592. DOI: 10.1093/biomet/63.3.581.
+    
+    \item Tukey, J. W. (1977). \textit{Exploratory Data Analysis}. Addison-Wesley Publishing Company. ISBN: 978-0201076165.
+\end{enumerate}
+
+% ============================================================================
+% FIN DEL DOCUMENTO
+% ============================================================================
+
+\end{document}
