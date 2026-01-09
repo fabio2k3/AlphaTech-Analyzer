@@ -1,0 +1,2266 @@
+% ============================================================================
+% INFORME ESTADÍSTICO - ALPHATECH ANALYZER
+% Análisis Cuantitativo del Sector Tecnológico NASDAQ-100 (2018-2024)
+% ============================================================================
+% Compilar con: pdflatex INFORME_ESTADISTICO.tex (ejecutar 2 veces)
+% ============================================================================
+
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================================
+% PAQUETES ESENCIALES
+% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{lmodern}
+
+% Matemáticas
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+
+% Geometría y espaciado
+\usepackage[margin=2.5cm, headheight=15pt]{geometry}
+\usepackage{setspace}
+\usepackage{parskip}
+
+% Gráficos e imágenes
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+
+% Tablas profesionales
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{colortbl}
+
+% Colores y cajas
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable,theorems}
+
+% Diagramas
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,backgrounds,fit}
+
+% Enlaces
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=NavyBlue,
+    urlcolor=RoyalBlue,
+    citecolor=ForestGreen,
+    pdftitle={Informe Estadístico - AlphaTech Analyzer},
+    pdfauthor={MATCOM - Universidad de La Habana}
+}
+
+% Encabezados y pies de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small\textcolor{NavyBlue}{\textbf{AlphaTech Analyzer}}}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{\small\textit{NASDAQ-100 Analysis}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+% Títulos con estilo
+\usepackage{titlesec}
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{NavyBlue}}
+    {\colorbox{NavyBlue!10}{\makebox[2em][c]{\textcolor{NavyBlue}{\thesection}}}}{1em}{}
+    [\vspace{-0.5em}\textcolor{NavyBlue}{\rule{\textwidth}{0.5pt}}]
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\color{RoyalBlue}}
+    {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+    {\normalfont\normalsize\bfseries\color{CornflowerBlue}}
+    {\thesubsubsection}{1em}{}
+
+% Listas personalizadas
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*,label=\textcolor{NavyBlue}{\textbullet}}
+\setlist[enumerate]{leftmargin=*}
+
+% Símbolos adicionales
+\usepackage{pifont}
+\newcommand{\cmark}{\textcolor{ForestGreen}{\ding{51}}}
+\newcommand{\xmark}{\textcolor{Crimson}{\ding{55}}}
+\newcommand{\wmark}{\textcolor{Orange}{\ding{115}}}
+
+% ============================================================================
+% RUTA DE IMÁGENES - IMPORTANTE: Ruta relativa desde docs/
+% ============================================================================
+\graphicspath{{../data/processed/}}
+
+% ============================================================================
+% DEFINICIÓN DE COLORES PERSONALIZADOS
+% ============================================================================
+\definecolor{theoremblue}{RGB}{230,242,255}
+\definecolor{theoremborder}{RGB}{70,130,180}
+\definecolor{definitiongreen}{RGB}{232,250,232}
+\definecolor{definitionborder}{RGB}{34,139,34}
+\definecolor{warningyellow}{RGB}{255,250,220}
+\definecolor{warningborder}{RGB}{218,165,32}
+\definecolor{tipgreen}{RGB}{240,255,240}
+\definecolor{tipborder}{RGB}{60,179,113}
+\definecolor{examplelavender}{RGB}{245,240,255}
+\definecolor{exampleborder}{RGB}{138,43,226}
+\definecolor{notegray}{RGB}{248,248,248}
+\definecolor{noteborder}{RGB}{128,128,128}
+\definecolor{formulablue}{RGB}{240,248,255}
+\definecolor{formulaborder}{RGB}{100,149,237}
+
+% ============================================================================
+% CAJAS DE COLORES (TCOLORBOX)
+% ============================================================================
+
+% Caja para Conceptos Clave
+\newtcolorbox{concepto}[1][]{
+    enhanced,
+    colback=theoremblue,
+    colframe=theoremborder,
+    fonttitle=\bfseries\large,
+    coltitle=white,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=theoremborder,sharp corners},
+    sharp corners=south,
+    rounded corners=north,
+    breakable,
+    title={\raisebox{-0.2em}{\Large$\diamond$} Concepto Clave},
+    #1
+}
+
+% Caja para Definiciones
+\newtcolorbox{definicion}[1][]{
+    enhanced,
+    colback=definitiongreen,
+    colframe=definitionborder,
+    fonttitle=\bfseries\large,
+    coltitle=white,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=definitionborder,sharp corners},
+    sharp corners=south,
+    rounded corners=north,
+    breakable,
+    title={\raisebox{-0.1em}{\Large$\triangleright$} Definición},
+    #1
+}
+
+% Caja para Fórmulas
+\newtcolorbox{formula}[1][]{
+    enhanced,
+    colback=formulablue,
+    colframe=formulaborder,
+    fonttitle=\bfseries,
+    coltitle=white,
+    attach boxed title to top center={yshift=-3mm},
+    boxed title style={colback=formulaborder,sharp corners},
+    sharp corners,
+    breakable,
+    title={\Large$\Sigma$~Fórmula},
+    #1
+}
+
+% Caja para Advertencias
+\newtcolorbox{advertencia}[1][]{
+    enhanced,
+    colback=warningyellow,
+    colframe=warningborder,
+    fonttitle=\bfseries\large,
+    coltitle=black,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=warningborder,sharp corners},
+    sharp corners=south,
+    rounded corners=north,
+    breakable,
+    title={\raisebox{-0.1em}{\Large$\triangle$} Importante},
+    #1
+}
+
+% Caja para Hallazgos
+\newtcolorbox{hallazgo}[1][]{
+    enhanced,
+    colback=white,
+    colframe=NavyBlue,
+    fonttitle=\bfseries,
+    coltitle=white,
+    attach boxed title to top center={yshift=-3mm},
+    boxed title style={colback=NavyBlue,sharp corners},
+    sharp corners,
+    breakable,
+    boxrule=2pt,
+    title={\large$\checkmark$~Hallazgo Clave},
+    #1
+}
+
+% Caja para Notas
+\newtcolorbox{nota}[1][]{
+    enhanced,
+    colback=notegray,
+    colframe=noteborder,
+    fonttitle=\bfseries\small,
+    coltitle=black,
+    left=5pt,right=5pt,top=3pt,bottom=3pt,
+    sharp corners,
+    breakable,
+    title={Nota:},
+    #1
+}
+
+% Caja para Resultados del Análisis
+\newtcolorbox{resultado}[1][]{
+    enhanced,
+    colback=examplelavender,
+    colframe=exampleborder,
+    fonttitle=\bfseries,
+    coltitle=white,
+    attach boxed title to top left={yshift=-3mm,xshift=5mm},
+    boxed title style={colback=exampleborder,sharp corners},
+    breakable,
+    title={\raisebox{-0.1em}{\large$\circledcirc$} Resultado},
+    #1
+}
+
+% ============================================================================
+% INICIO DEL DOCUMENTO
+% ============================================================================
+\begin{document}
+\onehalfspacing
+
+% ============================================================================
+% PORTADA
+% ============================================================================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    % Decoración superior
+    \begin{tikzpicture}[remember picture,overlay]
+        \fill[NavyBlue] (current page.north west) rectangle ([yshift=-4cm]current page.north east);
+        \node[anchor=north,yshift=-1.5cm] at (current page.north) {
+            \textcolor{white}{\Huge\bfseries AlphaTech Analyzer}
+        };
+        \node[anchor=north,yshift=-3cm] at (current page.north) {
+            \textcolor{white!80}{\large Proyecto de Análisis Estadístico Financiero}
+        };
+    \end{tikzpicture}
+    
+    \vspace{4cm}
+    
+    {\Huge\bfseries\textcolor{NavyBlue}{Informe Estadístico}}\\[0.8cm]
+    {\LARGE Análisis Cuantitativo del Sector Tecnológico}\\[0.3cm]
+    {\Large\textcolor{gray}{NASDAQ-100 | 2018--2024}}\\[1.5cm]
+    
+    % Línea decorativa
+    \begin{tikzpicture}
+        \draw[NavyBlue,line width=2pt] (0,0) -- (10,0);
+        \fill[NavyBlue] (5,0) circle (4pt);
+    \end{tikzpicture}
+    
+    \vspace{1.5cm}
+    
+    % Cuadro de información
+    \begin{tcolorbox}[
+        enhanced,
+        colback=NavyBlue!5,
+        colframe=NavyBlue,
+        width=0.85\textwidth,
+        sharp corners,
+        boxrule=1pt
+    ]
+    \centering
+    \begin{tabular}{rl}
+        \textcolor{NavyBlue}{\textbf{Universo de análisis:}} & 30 empresas tecnológicas NASDAQ-100 \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Período temporal:}} & Febrero 2018 -- Diciembre 2024 \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Frecuencia de datos:}} & Mensual (hasta 83 observaciones por empresa) \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Variables principales:}} & Precio Ajustado, Volumen, Retorno Log. \\[0.3cm]
+        \textcolor{NavyBlue}{\textbf{Observaciones totales:}} & 2,403 registros \\
+    \end{tabular}
+    \end{tcolorbox}
+    
+    \vfill
+    
+    % Pie de portada
+    \begin{tikzpicture}[remember picture,overlay]
+        \fill[NavyBlue!10] (current page.south west) rectangle ([yshift=2cm]current page.south east);
+        \node[anchor=south,yshift=0.8cm] at (current page.south) {
+            \textcolor{NavyBlue}{\large Universidad de La Habana --- Facultad de Matemática y Computación (MATCOM)}
+        };
+    \end{tikzpicture}
+    
+\end{titlepage}
+
+% ============================================================================
+% ÍNDICE
+% ============================================================================
+\tableofcontents
+\newpage
+
+% ============================================================================
+% RESUMEN EJECUTIVO
+% ============================================================================
+\section*{Resumen Ejecutivo}
+\addcontentsline{toc}{section}{Resumen Ejecutivo}
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Visión General del Estudio,
+    sharp corners
+]
+Este informe presenta un análisis estadístico exhaustivo de \textbf{30 empresas del sector tecnológico} pertenecientes al índice NASDAQ-100 durante el período \textbf{febrero 2018 -- diciembre 2024}. El estudio comprende \textbf{2,403 observaciones mensuales} y abarca desde la exploración inicial de los datos hasta análisis de riesgo, correlación y cambio estructural asociado a la pandemia de COVID-19.
+\end{tcolorbox}
+
+\vspace{0.5cm}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{hallazgo}[title=Principales Hallazgos]
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+    \item[\cmark] El 73.3\% de empresas presenta \textbf{colas pesadas} (leptocurtosis)
+    \item[\cmark] Correlación promedio de $\rho = 0.40$, máxima de $\rho = 0.72$
+    \item[\cmark] El 10.7\% de empresas muestra \textbf{cambio estructural} post-COVID
+    \item[\cmark] Tesla y Nvidia con MDD superior al 60\%
+\end{itemize}
+\end{hallazgo}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{advertencia}[title=Implicaciones Prácticas]
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+    \item[\wmark] Modelos gaussianos \textbf{subestiman} riesgos de cola
+    \item[\wmark] Diversificación intra-sectorial tiene \textbf{beneficio limitado}
+    \item[\wmark] Gestión de riesgo debe incorporar \textbf{métricas de drawdown}
+    \item[\wmark] Análisis de régimen es \textbf{esencial} en contextos de crisis
+\end{itemize}
+\end{advertencia}
+\end{minipage}
+
+\newpage
+
+% ============================================================================
+% INTRODUCCIÓN Y PREGUNTAS DE INVESTIGACIÓN
+% ============================================================================
+\section*{Introducción}
+\addcontentsline{toc}{section}{Introducción}
+
+\subsection*{Contexto y Motivación}
+
+El sector tecnológico ha experimentado una transformación significativa durante el período 2018--2024, caracterizado por una creciente digitalización global, la pandemia de COVID-19, y fluctuaciones macroeconómicas que impactaron profundamente los mercados financieros. Comprender el comportamiento de las empresas tecnológicas del NASDAQ-100 es crucial tanto para inversores institucionales como para académicos interesados en la dinámica de los mercados de capitales.
+
+Este estudio se enmarca en la tradición del análisis cuantitativo financiero, siguiendo los principios metodológicos establecidos por \textbf{Campbell, Lo \& MacKinlay} en \textit{The Econometrics of Financial Markets} (1997) y las prácticas de análisis exploratorio formalizadas por \textbf{Tukey} en \textit{Exploratory Data Analysis} (1977).
+
+\subsection*{Preguntas de Investigación}
+
+El presente análisis busca responder las siguientes preguntas de investigación, formuladas para abordar aspectos fundamentales del comportamiento financiero del sector tecnológico:
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=definitiongreen,
+    colframe=definitionborder,
+    fonttitle=\bfseries\large,
+    title=Preguntas de Investigación,
+    sharp corners,
+    boxrule=1.5pt
+]
+\begin{enumerate}[label=\textcolor{definitionborder}{\textbf{P\arabic*.}},leftmargin=2.5em,itemsep=8pt]
+    \item \textbf{¿Cuál es la estructura de riesgo-retorno de las empresas tecnológicas del NASDAQ-100 y cómo se comparan entre sí?}
+    
+    \textit{Objetivo}: Caracterizar la distribución de retornos, volatilidades y métricas de riesgo (drawdown, VaR implícito) para identificar empresas defensivas vs agresivas.
+    
+    \item \textbf{¿Existen grupos naturales de empresas con perfiles de riesgo similares que permitan una segmentación objetiva del sector?}
+    
+    \textit{Objetivo}: Aplicar técnicas de clustering (K-Means) para identificar segmentos homogéneos y validar estadísticamente su separación mediante ANOVA y métricas de silueta.
+    
+    \item \textbf{¿Cuál es la sensibilidad de cada empresa al riesgo sistemático del mercado (beta) y qué factores explican la heterogeneidad observada?}
+    
+    \textit{Objetivo}: Estimar el modelo CAPM individual para cada empresa, analizar la distribución de betas, y explorar la relación entre volatilidad y correlación con el mercado.
+    
+    \item \textbf{¿Los retornos medios de las empresas son estadísticamente distintos de cero, y difieren significativamente entre grupos de alto y bajo riesgo sistemático?}
+    
+    \textit{Objetivo}: Aplicar pruebas de hipótesis (t-tests, bootstrap, permutación) con correcciones por comparaciones múltiples para evaluar la significancia de los retornos.
+\end{enumerate}
+\end{tcolorbox}
+
+\subsection*{Fuente de Datos}
+
+Los datos fueron obtenidos mediante la API de \textbf{Yahoo Finance} (biblioteca \texttt{yfinance} v1.0 para Python), fuente ampliamente utilizada en investigación financiera y documentada en múltiples repositorios académicos de GitHub (ver referencias). El conjunto de datos comprende:
+
+\begin{itemize}
+    \item \textbf{Panel mensual}: 2,403 observaciones (30 empresas $\times$ hasta 83 meses)
+    \item \textbf{Variables}: Precio ajustado (Adj Close), Volumen, Retorno logarítmico mensual
+    \item \textbf{Período}: Febrero 2018 -- Diciembre 2024
+    \item \textbf{Benchmark de mercado}: QQQ (Invesco QQQ Trust, ETF del NASDAQ-100)
+\end{itemize}
+
+\newpage
+
+% ============================================================================
+% SECCIÓN 1: ANÁLISIS EXPLORATORIO DE DATOS
+% ============================================================================
+\section{Análisis Exploratorio de Datos (EDA)}
+
+\begin{concepto}
+El \textbf{Análisis Exploratorio de Datos} (EDA, \textit{Exploratory Data Analysis}) constituye el pilar fundamental de cualquier investigación estadística rigurosa. Introducido por John W. Tukey en su obra seminal \textit{Exploratory Data Analysis} (Addison-Wesley, 1977), este enfoque metodológico prioriza la comprensión profunda de los datos antes de aplicar modelos formales.
+
+\vspace{0.3cm}
+\textit{``El análisis exploratorio es trabajo detectivesco numérico --- o conteo, o representación gráfica. [...] Los gráficos son esenciales.''}
+
+\hfill --- \textbf{J. W. Tukey}, \textit{Exploratory Data Analysis}, p. 1
+\end{concepto}
+
+En el contexto del análisis financiero cuantitativo, el EDA cumple funciones críticas:
+
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em]
+    \item \textbf{Validación de integridad}: Identificación de valores faltantes, inconsistencias y errores de captura que podrían comprometer análisis posteriores.
+    \item \textbf{Caracterización distribucional}: Evaluación de momentos estadísticos, detección de asimetrías y cuantificación de comportamientos extremos.
+    \item \textbf{Descubrimiento de patrones}: Revelación de estructuras de correlación, dependencias temporales y agrupamientos naturales.
+    \item \textbf{Verificación de supuestos}: Contraste empírico de hipótesis requeridas por modelos paramétricos (normalidad, homocedasticidad, estacionariedad).
+\end{enumerate}
+
+% ----------------------------------------------------------------------------
+\subsection{Estructura del Conjunto de Datos}
+% ----------------------------------------------------------------------------
+
+El estudio se fundamenta en un \textbf{panel de datos} (datos longitudinales) que combina la dimensión temporal con la transversal, permitiendo capturar tanto la evolución individual de cada empresa como las dinámicas comunes del sector.
+
+\begin{definicion}[title=Panel de Datos]
+Un \textbf{panel de datos} (también denominado datos longitudinales) es una estructura que combina:
+\begin{itemize}
+    \item \textbf{Dimensión transversal}: Múltiples entidades (empresas, individuos, países)
+    \item \textbf{Dimensión temporal}: Observaciones repetidas en el tiempo
+\end{itemize}
+
+Formalmente, para $N$ entidades observadas en $T$ períodos, el panel contiene $N \times T$ observaciones potenciales. Cuando todas las combinaciones están presentes, se denomina \textbf{panel balanceado}.
+\end{definicion}
+
+\begin{table}[H]
+\centering
+\caption{Estructura del Panel de Datos Analizado}
+\begin{tabular}{lll}
+\toprule
+\textbf{Característica} & \textbf{Valor} & \textbf{Descripción} \\
+\midrule
+Empresas ($N$) & 30 & Tecnológicas NASDAQ-100 \\
+Período & Feb 2018 -- Dic 2024 & Aproximadamente 7 años \\
+Frecuencia & Mensual & Último día hábil de cada mes \\
+Observaciones & 2,403 & Panel desbalanceado (4 empresas con IPO posterior) \\
+\midrule
+\multicolumn{3}{l}{\textbf{Variables del Panel:}} \\
+\quad Date & datetime & Fecha de observación \\
+\quad Company & string & Identificador de empresa \\
+\quad AdjClose & float (USD) & Precio ajustado por dividendos/splits \\
+\quad Volume & int & Volumen mensual negociado \\
+\quad Return & float & Retorno logarítmico mensual \\
+\bottomrule
+\end{tabular}
+\label{tab:panel_description}
+\end{table}
+
+\begin{formula}[title=Retorno Logarítmico]
+El retorno logarítmico (también denominado retorno continuo) se define como:
+\begin{equation}
+r_t = \ln\left(\frac{P_t}{P_{t-1}}\right) = \ln(P_t) - \ln(P_{t-1})
+\end{equation}
+
+donde $P_t$ representa el precio ajustado en el período $t$. Esta transformación presenta ventajas sobre los retornos simples:
+
+\begin{itemize}
+    \item \textbf{Aditividad temporal}: $r_{t \to t+n} = \sum_{i=0}^{n-1} r_{t+i}$
+    \item \textbf{Simetría}: Movimientos equivalentes producen retornos simétricos
+    \item \textbf{Propiedades estadísticas}: Distribución más próxima a la normal
+\end{itemize}
+\end{formula}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Valores Faltantes}
+% ----------------------------------------------------------------------------
+
+La presencia de datos ausentes constituye una problemática ubicua en el análisis empírico. Su tratamiento inadecuado puede introducir sesgos sistemáticos y comprometer la validez de las inferencias estadísticas.
+
+\begin{concepto}[title={Taxonomía de Datos Faltantes}]
+La literatura estadística, fundamentada en el trabajo de Donald B. Rubin (\textit{Biometrika}, 1976), distingue tres mecanismos generadores de datos ausentes:
+
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{MCAR} (\textit{Missing Completely At Random}): La probabilidad de ausencia es independiente de cualquier variable. Representa el escenario más favorable.
+    \[P(M|Y_{obs}, Y_{miss}) = P(M)\]
+    
+    \item \textbf{MAR} (\textit{Missing At Random}): La probabilidad depende únicamente de variables observadas.
+    \[P(M|Y_{obs}, Y_{miss}) = P(M|Y_{obs})\]
+    
+    \item \textbf{MNAR} (\textit{Missing Not At Random}): La probabilidad depende del propio valor no observado. Genera sesgo difícil de corregir.
+\end{enumerate}
+
+En mercados financieros, las causas típicas incluyen: feriados bursátiles, suspensiones de cotización, IPOs posteriores al inicio del período.
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{missing_values_pattern.png}
+    \caption{Matriz de completitud del dataset. Cada fila representa una observación temporal y cada columna una variable. Las áreas sólidas indican datos presentes; franjas blancas revelarían patrones de ausencia. El dataset analizado presenta alta completitud.}
+    \label{fig:missing_values}
+\end{figure}
+
+\begin{resultado}
+El análisis de valores faltantes del panel revela:
+\begin{itemize}
+    \item \textbf{Todas las columnas}: 0\% de datos faltantes (Company, Ticker, Date, AdjClose, Volume, Return)
+    \item \textbf{Empresas con menos de 83 observaciones}: Palantir (51), Snowflake (51), Cloudflare (63), Spotify (80)
+    \item \textbf{Causa}: IPOs posteriores al inicio del período de análisis (no datos faltantes, sino inexistentes)
+\end{itemize}
+El dataset presenta \textbf{calidad excelente} para análisis sin necesidad de imputación.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Distribución de Retornos Financieros}
+% ----------------------------------------------------------------------------
+
+La caracterización distribucional de los retornos constituye un pilar fundamental del análisis financiero cuantitativo. Las propiedades de esta distribución determinan la validez de modelos de valoración y métricas de riesgo.
+
+\begin{concepto}[title=Hechos Estilizados de Retornos Financieros]
+La investigación empírica, documentada extensamente por Cont (\textit{Quantitative Finance}, 2001) y Campbell, Lo \& MacKinlay (\textit{The Econometrics of Financial Markets}, Princeton, 1997), ha identificado regularidades que distinguen los retornos financieros de la distribución normal:
+
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{Colas pesadas} (\textit{fat tails} / leptocurtosis): Eventos extremos de $\pm 4\sigma$ o más ocurren con frecuencia significativamente mayor a la predicha por la normal.
+    
+    \item \textbf{Asimetría negativa}: Las caídas abruptas tienden a ser más pronunciadas que las subidas equivalentes, especialmente durante episodios de estrés.
+    
+    \item \textbf{Agrupamiento de volatilidad} (\textit{volatility clustering}): Períodos de alta volatilidad tienden a persistir. Formalizado en modelos ARCH/GARCH (Engle, 1982; Bollerslev, 1986).
+    
+    \item \textbf{Efecto apalancamiento}: Correlación negativa entre retornos y volatilidad futura; las caídas incrementan la volatilidad más que subidas equivalentes.
+\end{enumerate}
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{return_distribution.png}
+    \caption{Distribución empírica de retornos mensuales del panel. El histograma representa la frecuencia observada; la curva KDE (\textit{Kernel Density Estimation}) suaviza la distribución. Se observa la característica forma leptocúrtica con colas más pesadas que la normal.}
+    \label{fig:return_distribution}
+\end{figure}
+
+\begin{nota}
+La distribución agregada de los 2,403 retornos mensuales presenta las siguientes características:
+\begin{itemize}
+    \item \textbf{Media}: $\mu = 1.53\%$ mensual
+    \item \textbf{Volatilidad}: $\sigma = 10.84\%$ mensual
+    \item \textbf{Asimetría global}: $\gamma_1 = 0.28$ (sesgo positivo leve)
+    \item \textbf{Curtosis global}: $\gamma_2 = 5.43$ (leptocurtosis pronunciada)
+\end{itemize}
+La curtosis de 5.43 implica colas significativamente más pesadas que la distribución normal ($\gamma_2 = 0$), confirmando que los modelos gaussianos subestiman la probabilidad de eventos extremos.
+\end{nota}
+
+\begin{definicion}[title={Estimación de Densidad Kernel (KDE)}]
+La KDE es un método no paramétrico para estimar la función de densidad de probabilidad:
+\begin{equation}
+\hat{f}_h(x) = \frac{1}{nh}\sum_{i=1}^{n}K\left(\frac{x-x_i}{h}\right)
+\end{equation}
+
+donde $K(\cdot)$ es una función kernel (típicamente gaussiana) y $h$ es el parámetro de ancho de banda (\textit{bandwidth}). A diferencia del histograma, la KDE produce estimaciones continuas y diferenciables.
+\end{definicion}
+
+\subsubsection{Distribución por Empresa: Análisis Comparativo}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{returns_by_company.png}
+    \caption{Diagramas de caja (boxplots) de retornos logarítmicos mensuales por empresa. Cada boxplot sintetiza: mediana (línea central), cuartiles (bordes), rango IQR extendido (bigotes) y outliers (puntos). La línea de referencia en cero facilita identificar sesgo.}
+    \label{fig:returns_boxplot}
+\end{figure}
+
+\begin{formula}[title={Anatomía del Diagrama de Caja (Tukey, 1977)}]
+El boxplot codifica visualmente la distribución mediante:
+\begin{align}
+\text{Mediana} &= Q_2 = \text{Percentil}_{50} \\
+\text{Rango Intercuartílico} &: IQR = Q_3 - Q_1 \\
+\text{Bigote inferior} &= Q_1 - 1.5 \times IQR \\
+\text{Bigote superior} &= Q_3 + 1.5 \times IQR \\
+\text{Outliers} &: x \notin [Q_1 - 1.5 \cdot IQR, \; Q_3 + 1.5 \cdot IQR]
+\end{align}
+
+El factor 1.5 corresponde a la propuesta original de Tukey; para outliers extremos se utiliza factor 3.0.
+\end{formula}
+
+\subsubsection{Volatilidad por Empresa}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{volatility_by_company.png}
+    \caption{Volatilidad mensual (desviación estándar de retornos) por empresa, ordenada de mayor a menor. La línea horizontal indica la mediana sectorial. Empresas como Tesla y Nvidia exhiben volatilidad significativamente superior al promedio.}
+    \label{fig:volatility}
+\end{figure}
+
+\begin{definicion}[title=Volatilidad Histórica]
+La volatilidad representa la dispersión de los retornos y constituye la métrica de riesgo más utilizada en finanzas. Según Hull (\textit{Options, Futures, and Other Derivatives}, Pearson, 2018), la volatilidad histórica se estima como:
+\begin{equation}
+\sigma = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N}(r_i - \bar{r})^2}
+\end{equation}
+
+Esta métrica está fundamentada en la Teoría Moderna de Portafolios, que asume inversores aversos al riesgo que prefieren menor variabilidad para un mismo retorno esperado.
+\end{definicion}
+
+\begin{advertencia}[title=Limitaciones de la Volatilidad como Métrica de Riesgo]
+La desviación estándar presenta deficiencias importantes:
+\begin{itemize}
+    \item \textbf{Simetría implícita}: Penaliza igualmente ganancias y pérdidas inesperadas
+    \item \textbf{Supuesto de normalidad}: Subestima eventos extremos en distribuciones leptocúrticas
+    \item \textbf{Mirada retrospectiva}: Volatilidad histórica no predice necesariamente la futura
+\end{itemize}
+Métricas complementarias: Value at Risk (VaR), Expected Shortfall (CVaR), Maximum Drawdown.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Relación Riesgo-Retorno}
+% ----------------------------------------------------------------------------
+
+La relación entre riesgo y retorno esperado constituye el axioma central de las finanzas modernas.
+
+\begin{concepto}[title={Frontera Eficiente}]
+Harry M. Markowitz formalizó el problema de selección de portafolios como optimización media-varianza en su artículo \textit{``Portfolio Selection''} (\textit{The Journal of Finance}, Vol. 7, No. 1, 1952, pp. 77--91), trabajo por el cual recibió el Premio Nobel de Economía en 1990. La \textbf{frontera eficiente} representa el conjunto de portafolios que maximizan retorno para cada nivel de riesgo.
+
+Para un portafolio de dos activos:
+\begin{equation}
+\sigma_p^2 = w_1^2\sigma_1^2 + w_2^2\sigma_2^2 + 2w_1w_2\sigma_1\sigma_2\rho_{12}
+\end{equation}
+
+El término $2w_1w_2\sigma_1\sigma_2\rho_{12}$ es la fuente del beneficio de diversificación cuando $\rho_{12} < 1$.
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{risk_return_relation.png}
+    \caption{Diagrama de dispersión riesgo-retorno. Cada punto representa una empresa; el tamaño es proporcional al volumen promedio (proxy de liquidez). Las líneas punteadas segmentan el espacio según mediana de volatilidad y retorno cero.}
+    \label{fig:risk_return}
+\end{figure}
+
+% Diagrama de cuadrantes
+\begin{center}
+\begin{tikzpicture}[scale=0.85,
+    cuadrante/.style={draw,minimum width=4.2cm,minimum height=2.3cm,align=center,font=\small}
+]
+    \node[cuadrante,fill=ForestGreen!20] (q1) at (-2.5,1.5) {\textbf{ÓPTIMO}\\Alto Retorno\\Baja Volatilidad};
+    \node[cuadrante,fill=Orange!20] (q2) at (2.5,1.5) {\textbf{AGRESIVO}\\Alto Retorno\\Alta Volatilidad};
+    \node[cuadrante,fill=SkyBlue!20] (q3) at (-2.5,-1.5) {\textbf{CONSERVADOR}\\Bajo Retorno\\Baja Volatilidad};
+    \node[cuadrante,fill=Crimson!20] (q4) at (2.5,-1.5) {\textbf{INEFICIENTE}\\Bajo Retorno\\Alta Volatilidad};
+    
+    \draw[-{Stealth},thick] (-5,0) -- (5,0) node[right] {Volatilidad $\sigma$};
+    \draw[-{Stealth},thick] (0,-3) -- (0,3) node[above] {Retorno $\mu$};
+\end{tikzpicture}
+\end{center}
+
+\begin{formula}[title=Ratio de Sharpe]
+El ratio de Sharpe cuantifica el exceso de retorno por unidad de riesgo:
+\begin{equation}
+\text{Sharpe Ratio} = \frac{E[R_p] - R_f}{\sigma_p}
+\end{equation}
+donde $R_f$ es la tasa libre de riesgo. Valores $> 1.0$ se consideran atractivos; $> 2.0$, excelentes.
+\end{formula}
+
+% ----------------------------------------------------------------------------
+\subsection{Evolución Temporal de Precios}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title={Precio Ajustado (\textit{Adjusted Close})}]
+El precio ajustado incorpora correcciones retroactivas por eventos corporativos:
+\begin{itemize}
+    \item \textbf{Dividendos}: El precio ex-dividendo cae por el monto distribuido; el ajuste redistribuye hacia atrás
+    \item \textbf{Splits}: Una división 2:1 reduce el precio a la mitad; los históricos se ajustan proporcionalmente
+    \item \textbf{Derechos y spin-offs}: Otras acciones que modifican acciones en circulación
+\end{itemize}
+El uso del precio ajustado es \textbf{imperativo} para calcular retornos totales reales.
+\end{definicion}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{microsoft_price_evolution.png}
+    \caption{Evolución del precio ajustado de Microsoft (MSFT) 2018--2024. El área sombreada facilita visualización de tendencia. Se observan correcciones durante COVID-19 crash (marzo 2020) y tech selloff (2022).}
+    \label{fig:microsoft_price}
+\end{figure}
+
+\subsubsection{Series Normalizadas: Comparación Multi-Activo}
+
+\begin{formula}[title=Normalización Base 100]
+Para comparar activos con precios en escalas dispares:
+\begin{equation}
+P^{norm}_t = \frac{P_t}{P_0} \times 100
+\end{equation}
+
+Interpretación:
+\begin{itemize}
+    \item $P^{norm}_t = 150 \Rightarrow$ Rendimiento acumulado +50\%
+    \item $P^{norm}_t = 75 \Rightarrow$ Pérdida acumulada -25\%
+\end{itemize}
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{series_normalizadas.png}
+    \caption{Series de precios normalizadas (Base 100) para principales empresas tecnológicas. Líneas verticales marcan COVID-19 crash (marzo 2020) y Tech Selloff (2022). La divergencia revela heterogeneidad de desempeño.}
+    \label{fig:series_norm}
+\end{figure}
+
+\begin{resultado}
+El análisis de rendimiento total durante el período Feb 2018 -- Dic 2024 (6.92 años) revela:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Empresa} & \textbf{Rendimiento Total} & \textbf{CAGR} \\
+\midrule
+Nvidia & +2,196.0\% & 57.3\% \\
+Tesla & +1,725.1\% & 52.2\% \\
+Apple & +499.4\% & 29.6\% \\
+Microsoft & +386.7\% & 25.7\% \\
+Alphabet & +247.7\% & 19.7\% \\
+Meta Platforms & +232.8\% & 19.0\% \\
+Amazon & +192.6\% & 16.8\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Nvidia y Tesla destacan con rendimientos excepcionales superiores a 1,700\%, impulsados por el auge de IA y vehículos eléctricos.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Correlación}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Diversificación y Correlación]
+El principio de diversificación establece que combinar activos imperfectamente correlacionados reduce el riesgo sin sacrificar retorno:
+
+\begin{equation}
+\sigma_p^2 = \sum_i w_i^2\sigma_i^2 + \sum_i \sum_{j \neq i} w_i w_j \sigma_i \sigma_j \rho_{ij}
+\end{equation}
+
+El beneficio de diversificación surge cuando $\rho_{ij} < 1$. Máximo beneficio con $\rho < 0$.
+\end{concepto}
+
+\begin{formula}[title=Coeficiente de Correlación de Pearson]
+\begin{equation}
+\rho_{ij} = \frac{\text{Cov}(R_i, R_j)}{\sigma_i \cdot \sigma_j} = \frac{\sum_{t=1}^{T}(R_{i,t} - \bar{R}_i)(R_{j,t} - \bar{R}_j)}{\sqrt{\sum_{t}(R_{i,t} - \bar{R}_i)^2} \cdot \sqrt{\sum_{t}(R_{j,t} - \bar{R}_j)^2}}
+\end{equation}
+
+El coeficiente $\rho \in [-1, 1]$ mide intensidad y dirección de relación lineal.
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{correlation_heatmap.png}
+    \caption{Matriz de correlación de retornos mensuales entre las 30 empresas. Colores cálidos indican correlaciones positivas altas; colores fríos indican bajas o negativas. Diagonal principal: autocorrelación = 1.}
+    \label{fig:correlation}
+\end{figure}
+
+\begin{resultado}
+El análisis de correlación entre las 30 empresas (435 pares únicos) reveló:
+
+\textbf{Pares con mayor correlación}:
+\begin{enumerate}
+    \item ASML -- Microsoft: $\rho = 0.721$
+    \item Salesforce -- ServiceNow: $\rho = 0.711$
+    \item Adobe -- Microsoft: $\rho = 0.709$
+    \item Amazon -- Microsoft: $\rho = 0.690$
+    \item Accenture -- Microsoft: $\rho = 0.688$
+\end{enumerate}
+
+\textbf{Pares con menor correlación}:
+\begin{enumerate}
+    \item Cloudflare -- IBM: $\rho = -0.147$
+    \item Fortinet -- Tencent: $\rho = -0.125$
+    \item Snowflake -- Tencent: $\rho = 0.001$
+    \item Cloudflare -- Tencent: $\rho = 0.021$
+    \item Accenture -- Tencent: $\rho = 0.024$
+\end{enumerate}
+
+\textbf{Distribución}: Alta ($\rho \geq 0.7$): 3 pares (0.7\%) | Media ($0.4 \leq \rho < 0.7$): 227 pares (52.2\%) | Baja ($\rho < 0.4$): 205 pares (47.1\%)
+\end{resultado}
+
+\begin{advertencia}[title=Correlación Intra-Sectorial]
+El análisis de correlación del panel tecnológico revela:
+\begin{itemize}
+    \item \textbf{Correlación promedio}: $\rho = 0.40$ (excluyendo diagonal)
+    \item \textbf{Rango}: desde $\rho = -0.15$ (Cloudflare--IBM) hasta $\rho = 0.72$ (ASML--Microsoft)
+    \item \textbf{Clasificación}: Solo 3 pares (0.7\%) con correlación alta ($\rho \geq 0.7$)
+\end{itemize}
+Esta correlación moderada \textbf{permite cierto beneficio de diversificación} intra-sectorial, aunque limitado respecto a diversificación entre sectores.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Detección de Valores Atípicos (Outliers)}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Métodos de Detección de Outliers]
+\textbf{Método IQR (Tukey, 1977):}
+\begin{equation}
+\text{Outlier si: } x < Q_1 - 1.5 \times IQR \quad \lor \quad x > Q_3 + 1.5 \times IQR
+\end{equation}
+
+\textbf{Método Z-score:}
+\begin{equation}
+z_i = \frac{x_i - \mu}{\sigma}, \quad \text{Outlier si } |z_i| > 3
+\end{equation}
+
+El método IQR es más robusto (usa cuartiles); Z-score es sensible a outliers en media/std.
+\end{definicion}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{outliers_analysis.png}
+    \caption{Análisis de outliers. Izquierda: Boxplot con outliers como puntos individuales. Derecha: Histograma con límites IQR superpuestos delimitando región típica.}
+    \label{fig:outliers}
+\end{figure}
+
+\begin{resultado}
+La detección de outliers en los retornos del panel reveló:
+\begin{itemize}
+    \item \textbf{Método IQR}: 84 outliers detectados (3.50\% de las observaciones)
+    \item \textbf{Método Z-score ($|z| > 3$)}: 33 outliers detectados (1.37\%)
+    \item \textbf{Límites IQR}: $Q_1 = -4.53\%$, $Q_3 = +7.51\%$, $IQR = 12.04\%$
+    \item \textbf{Rango válido}: $[-22.59\%, +25.57\%]$
+\end{itemize}
+
+\textbf{Outliers más extremos positivos}: Palantir +98.4\% (Nov 2020), Palantir +64.1\% (May 2023), Tesla +55.5\% (Ago 2020).
+
+\textbf{Outliers más extremos negativos}: Netflix $-67.7\%$ (Abr 2022), Tesla $-45.8\%$ (Dic 2022), Cloudflare $-43.1\%$ (May 2022).
+\end{resultado}
+
+\begin{advertencia}[title=Tratamiento de Outliers Financieros]
+\textbf{Los outliers financieros raramente deben eliminarse.} Representan frecuentemente:
+\begin{itemize}
+    \item Eventos legítimos (crashes, rallies, anuncios corporativos)
+    \item Información valiosa sobre riesgo de cola (\textit{tail risk})
+    \item Señales de cambio de régimen
+\end{itemize}
+Eliminarlos subestimaría el riesgo real.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Momentos Estadísticos}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Los Cuatro Momentos de una Distribución]
+\textbf{1. Media} (Primer momento):
+$\mu = E[R]$
+
+\textbf{2. Varianza} (Segundo momento central):
+$\sigma^2 = E[(R - \mu)^2]$
+
+\textbf{3. Asimetría / Skewness} (Tercer momento estandarizado):
+\begin{equation}
+\gamma_1 = E\left[\left(\frac{R - \mu}{\sigma}\right)^3\right]
+\end{equation}
+$\gamma_1 < 0$: Sesgo negativo (cola izquierda más larga)
+
+\textbf{4. Curtosis} (Cuarto momento estandarizado):
+\begin{equation}
+\gamma_2 = E\left[\left(\frac{R - \mu}{\sigma}\right)^4\right] - 3
+\end{equation}
+$\gamma_2 > 0$: Leptocúrtica (colas pesadas, eventos extremos frecuentes)
+\end{concepto}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{qq_plot_returns.png}
+    \caption{Gráfico Q-Q comparando cuantiles empíricos con normal teórica. Puntos sobre diagonal indicarían normalidad. Desviaciones en colas revelan leptocurtosis característica.}
+    \label{fig:qq_plot}
+\end{figure}
+
+\begin{formula}[title={Test de Jarque-Bera}]
+Propuesto por Carlos M. Jarque y Anil K. Bera (\textit{International Statistical Review}, 1987), este test evalúa conjuntamente asimetría y curtosis para contrastar normalidad:
+\begin{equation}
+JB = \frac{n}{6}\left(\gamma_1^2 + \frac{\gamma_2^2}{4}\right)
+\end{equation}
+
+Bajo $H_0$ (normalidad), $JB \sim \chi^2(2)$. Si el p-valor $< 0.05$, se rechaza la hipótesis de normalidad al 5\% de significancia.
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{distribution_analysis.png}
+    \caption{Análisis distribucional. Evaluación de asimetría, curtosis y desviación respecto a normalidad para el conjunto de empresas.}
+    \label{fig:distribution}
+\end{figure}
+
+\begin{hallazgo}
+El análisis de momentos estadísticos del panel tecnológico revela:
+\begin{itemize}
+    \item \textbf{Asimetría promedio}: $\gamma_1 = -0.15$ (sesgo negativo leve)
+    \item \textbf{Curtosis promedio}: $\gamma_2 = 1.06$ (exceso de curtosis, colas pesadas)
+    \item \textbf{Leptocurtosis}: 22 de 30 empresas (73.3\%) presentan $\gamma_2 > 0$
+    \item \textbf{Normalidad}: 10 de 30 empresas (33.3\%) rechazan normalidad (Test Jarque-Bera, $\alpha = 0.05$)
+\end{itemize}
+La empresa con mayor curtosis es \textbf{Netflix} ($\gamma_2 = 10.16$), seguida de SAP ($\gamma_2 = 3.63$) y Palantir ($\gamma_2 = 2.97$). Las empresas que rechazan normalidad son: Meta, Taiwan Semiconductor, Netflix, IBM, Palantir, Intel, Broadcom, SAP, Infosys y Snowflake.
+\end{hallazgo}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Drawdown}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Drawdown y Maximum Drawdown]
+El drawdown cuantifica la caída desde máximos históricos:
+\begin{equation}
+DD_t = \frac{P_t - \max_{s \leq t} P_s}{\max_{s \leq t} P_s} \times 100\%
+\end{equation}
+
+El \textbf{Maximum Drawdown (MDD)} es la peor caída observada:
+\begin{equation}
+MDD = \min_{t} DD_t
+\end{equation}
+
+Propiedades: $DD_t \leq 0$ siempre; $DD_t = 0$ en máximo histórico.
+\end{definicion}
+
+\begin{advertencia}[title=Asimetría de la Recuperación]
+Las pérdidas requieren ganancias proporcionalmente mayores para recuperarse:
+
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+\textbf{Pérdida} & \textbf{Ganancia para recuperar} \\
+\midrule
+-10\% & +11.1\% \\
+-25\% & +33.3\% \\
+-50\% & +100\% \\
+-75\% & +300\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Por esto la gestión del riesgo de caída es más importante que maximizar retorno.
+\end{advertencia}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{drawdown_analysis.png}
+    \caption{Series de drawdown para empresas seleccionadas (Tesla, Nvidia, Apple, Microsoft). Área roja: magnitud del drawdown. Líneas horizontales: umbrales $-20\%$ (corrección) y $-50\%$ (crisis).}
+    \label{fig:drawdown}
+\end{figure}
+
+\begin{resultado}
+El análisis de Maximum Drawdown (MDD) para las empresas principales reveló:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Empresa} & \textbf{MDD} & \textbf{Tiempo bajo agua} & \textbf{Retorno para recuperar} \\
+\midrule
+Tesla & $-67.72\%$ & 67 meses (80.7\%) & +209.8\% \\
+Nvidia & $-62.82\%$ & 54 meses (65.1\%) & +169.0\% \\
+Microsoft & $-30.53\%$ & 48 meses (57.8\%) & +43.9\% \\
+Apple & $-30.46\%$ & 56 meses (67.5\%) & +43.8\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Las empresas de alto crecimiento (Tesla, Nvidia) experimentaron caídas superiores al 60\%, mientras que las empresas maduras (Apple, Microsoft) limitaron sus pérdidas máximas a aproximadamente 30\%.
+\end{resultado}
+
+\begin{formula}[title=Calmar Ratio]
+Mide eficiencia del retorno ajustada por riesgo de pérdida máxima:
+\begin{equation}
+\text{Calmar Ratio} = \frac{CAGR}{|MDD|}
+\end{equation}
+donde $CAGR$ es Tasa de Crecimiento Anual Compuesta. Ratio $> 1$: excelente.
+\end{formula}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Cambio Estructural: Pre/Post COVID-19}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Análisis de Regímenes]
+La pandemia afectó los mercados tecnológicos a través de múltiples canales:
+
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{Shock inicial}: Caída abrupta marzo 2020 ante parálisis económica
+    \item \textbf{Transformación digital}: Trabajo remoto, e-commerce, cloud beneficiaron al sector
+    \item \textbf{Política monetaria}: Tasas cercanas a cero impulsaron valuaciones
+    \item \textbf{Reversión 2022}: Normalización monetaria y corrección de excesos
+\end{enumerate}
+
+División temporal: \textbf{Pre-COVID} (Ene 2018 -- Feb 2020) vs \textbf{Post-COVID} (Mar 2020 -- Dic 2024)
+\end{concepto}
+
+\begin{formula}[title=Tests de Comparación]
+\textbf{Test t de Welch} (medias con varianzas desiguales):
+\begin{equation}
+t = \frac{\bar{R}_{post} - \bar{R}_{pre}}{\sqrt{\frac{s_{post}^2}{n_{post}} + \frac{s_{pre}^2}{n_{pre}}}}
+\end{equation}
+
+\textbf{Test de Levene}: Homogeneidad de varianzas. $H_0$: $\sigma^2_{pre} = \sigma^2_{post}$
+
+P-valor $< 0.05$ indica cambio estadísticamente significativo.
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{covid_period_comparison.png}
+    \caption{Cambios en retorno medio y volatilidad (Post-COVID vs Pre-COVID). Verde: mejora; Rojo: deterioro.}
+    \label{fig:covid_comparison}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{risk_return_periods.png}
+    \caption{Diagrama riesgo-retorno segmentado por período. Visualización de migración en el espacio riesgo-retorno tras shock pandémico.}
+    \label{fig:risk_return_periods}
+\end{figure}
+
+\begin{hallazgo}
+El análisis de cambio estructural pre/post COVID-19 revela:
+\begin{itemize}
+    \item \textbf{Retorno medio}: 19 de 30 empresas (63.3\%) mejoraron post-COVID
+    \item \textbf{Volatilidad}: 24 de 30 empresas (80.0\%) aumentaron volatilidad post-COVID
+    \item \textbf{Pre-COVID} (677 obs.): Retorno medio promedio 1.07\%, volatilidad promedio 8.40\%
+    \item \textbf{Post-COVID} (1,726 obs.): Retorno medio promedio 1.72\%, volatilidad promedio 11.01\%
+    \item \textbf{Test de Welch}: Ninguna empresa (0\%) muestra cambio significativo en media ($\alpha = 0.05$)
+    \item \textbf{Test de Levene}: Solo 3 empresas (10.7\%) --- ASML, Salesforce, Adobe --- muestran cambio significativo en varianza ($\alpha = 0.05$)
+\end{itemize}
+El COVID-19 representó un punto de quiebre estructural para \textbf{algunas} empresas del sector, principalmente en términos de volatilidad más que en retorno promedio.
+\end{hallazgo}
+
+\begin{nota}
+\textbf{Empresas con mayor mejora post-COVID}: Nvidia (+4.80\% mensual), Broadcom (+3.25\%), Spotify (+2.80\%), Oracle (+2.26\%).
+
+\textbf{Empresas con peor desempeño post-COVID}: Intel ($-2.36\%$ mensual), Adobe ($-1.75\%$), ServiceNow ($-1.09\%$).
+
+La ausencia de cambios estadísticamente significativos en media (Test de Welch) se debe a la alta variabilidad intra-período que domina sobre las diferencias entre períodos.
+\end{nota}
+
+% ----------------------------------------------------------------------------
+\subsection{Síntesis del Análisis Exploratorio}
+% ----------------------------------------------------------------------------
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Conclusiones del Análisis Exploratorio,
+    sharp corners,
+    boxrule=1.5pt
+]
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em]
+    \item \textbf{Calidad de datos}: Dataset con 0\% de valores faltantes en todas las columnas. Cuatro empresas (Palantir, Snowflake, Cloudflare, Spotify) con menos de 83 observaciones debido a IPOs posteriores a febrero 2018.
+    
+    \item \textbf{Distribución de retornos}: El 73.3\% de empresas presenta leptocurtosis ($\gamma_2 > 0$). Asimetría promedio de $-0.15$ y curtosis promedio de $1.06$. Netflix destaca con curtosis extrema ($\gamma_2 = 10.16$).
+    
+    \item \textbf{Outliers}: 3.50\% de observaciones clasificadas como outliers (método IQR). Eventos extremos concentrados en 2020 (COVID crash/rally) y 2022 (tech selloff).
+    
+    \item \textbf{Correlación}: Promedio $\rho = 0.40$, con rango $[-0.15, 0.72]$. Solo 3 pares con $\rho \geq 0.7$ (ASML--Microsoft, Salesforce--ServiceNow, Adobe--Microsoft).
+    
+    \item \textbf{Drawdowns}: Tesla ($-67.72\%$) y Nvidia ($-62.82\%$) con MDD superiores al 60\%. Apple y Microsoft limitaron pérdidas máximas a $\approx 30\%$.
+    
+    \item \textbf{Impacto COVID-19}: 63.3\% de empresas mejoraron retorno medio post-COVID, pero 80.0\% aumentaron volatilidad. Ninguna empresa muestra cambio significativo en media (Test de Welch), pero 3 empresas (ASML, Salesforce, Adobe) muestran cambio significativo en varianza (Test de Levene).
+\end{enumerate}
+\end{tcolorbox}
+
+\newpage
+
+% ============================================================================
+% SECCIÓN 2: ANÁLISIS DE CLUSTERING
+% ============================================================================
+\section{Análisis de Clustering}
+
+\begin{concepto}
+El \textbf{análisis de clustering} (o agrupamiento) es una técnica de aprendizaje no supervisado que permite identificar grupos naturales dentro de un conjunto de datos sin utilizar etiquetas predefinidas. En el contexto financiero, permite segmentar activos según características comunes de riesgo-retorno, facilitando la construcción de portafolios y la identificación de perfiles de inversión.
+
+\vspace{0.3cm}
+Según Hastie, Tibshirani \& Friedman (\textit{The Elements of Statistical Learning}, 2009), el clustering busca particionar observaciones en grupos de manera que las observaciones dentro de cada grupo sean más similares entre sí que con observaciones de otros grupos.
+\end{concepto}
+
+El objetivo de esta sección es segmentar las 30 empresas tecnológicas del NASDAQ-100 en grupos homogéneos basados en sus características financieras fundamentales: rentabilidad, volatilidad, exposición sistemática al mercado (beta) y liquidez.
+
+% ----------------------------------------------------------------------------
+\subsection{Metodología y Preprocesamiento}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=K-Means Clustering]
+El algoritmo \textbf{K-Means}, propuesto originalmente por MacQueen (\textit{Proceedings of the 5th Berkeley Symposium on Mathematical Statistics and Probability}, 1967), es uno de los métodos de particionamiento más utilizados. El algoritmo minimiza la suma de distancias euclídeas al cuadrado dentro de cada cluster:
+
+\begin{equation}
+\min_{C_1,\ldots,C_k} \sum_{j=1}^{k} \sum_{x_i \in C_j} \|x_i - \mu_j\|^2
+\end{equation}
+
+donde $C_j$ representa el conjunto de observaciones asignadas al cluster $j$, $\mu_j$ es el centroide del cluster $j$, y $\|x_i - \mu_j\|^2$ es la distancia euclídea al cuadrado entre la observación $x_i$ y el centroide.
+\end{definicion}
+
+\subsubsection{Variables Utilizadas}
+
+Para el análisis de clustering se seleccionaron cuatro variables que caracterizan distintas dimensiones del perfil financiero de cada empresa:
+
+\begin{table}[H]
+\centering
+\caption{Variables utilizadas en el análisis de clustering}
+\begin{tabular}{lll}
+\toprule
+\textbf{Variable} & \textbf{Descripción} & \textbf{Interpretación} \\
+\midrule
+MeanReturn & Retorno logarítmico mensual promedio & Rentabilidad \\
+Volatility & Desviación estándar de retornos & Riesgo total \\
+Beta & Coeficiente beta CAPM & Riesgo sistemático \\
+AvgVolume & Volumen promedio mensual & Liquidez \\
+\bottomrule
+\end{tabular}
+\label{tab:clustering_vars}
+\end{table}
+
+\begin{formula}[title=Estandarización Z-Score]
+Antes de aplicar K-Means, todas las variables fueron estandarizadas mediante \textbf{StandardScaler} para asegurar que contribuyan de forma equilibrada a las distancias euclídeas:
+
+\begin{equation}
+z_i = \frac{x_i - \bar{x}}{s}
+\end{equation}
+
+donde $\bar{x}$ es la media muestral y $s$ la desviación estándar. Tras la transformación, cada variable tiene $\mu \approx 0$ y $\sigma \approx 1$.
+\end{formula}
+
+\begin{resultado}
+La normalización de las 4 variables para las 30 empresas produjo una matriz $X_{scaled}$ de dimensión $(30 \times 4)$ con las siguientes propiedades verificadas:
+\begin{itemize}
+    \item \textbf{MeanReturn}: $\mu = 0.000$, $\sigma = 1.017$
+    \item \textbf{Volatility}: $\mu = 0.000$, $\sigma = 1.017$
+    \item \textbf{Beta}: $\mu = 0.000$, $\sigma = 1.017$
+    \item \textbf{AvgVolume}: $\mu = 0.000$, $\sigma = 1.017$
+\end{itemize}
+La normalización fue exitosa, eliminando el sesgo por diferencias de escala entre variables.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Selección del Número Óptimo de Clusters}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Problema de Selección de $k$]
+La determinación del número óptimo de clusters es uno de los desafíos fundamentales del análisis de clustering. No existe un criterio universalmente óptimo, por lo que se recomienda utilizar múltiples métricas complementarias:
+
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{Gap Statistic} (Tibshirani, Walther \& Hastie, \textit{JRSS-B}, 2001): Compara la compactación observada con la esperada bajo una distribución de referencia uniforme.
+    
+    \item \textbf{Silhouette Score} (Rousseeuw, \textit{J. Computational and Applied Mathematics}, 1987): Mide la cohesión intra-cluster y separación inter-cluster. Rango $[-1, 1]$; valores $> 0.5$ indican buena estructura.
+    
+    \item \textbf{Davies-Bouldin Index} (Davies \& Bouldin, \textit{IEEE Trans. PAMI}, 1979): Evalúa la similitud promedio entre clusters. Valores menores indican mejor separación.
+    
+    \item \textbf{Método del Codo} (\textit{Elbow Method}): Identifica el punto donde la reducción de inercia se estabiliza.
+\end{enumerate}
+\end{concepto}
+
+\begin{formula}[title=Gap Statistic]
+El Gap Statistic se define como:
+\begin{equation}
+Gap_n(k) = E_n^*[\log(W_k)] - \log(W_k)
+\end{equation}
+
+donde $W_k$ es la inercia (suma de distancias intra-cluster) y $E_n^*[\cdot]$ es la esperanza bajo una distribución de referencia. El $k$ óptimo es el menor valor que satisface:
+\begin{equation}
+Gap(k) \geq Gap(k+1) - s_{k+1}
+\end{equation}
+donde $s_{k+1}$ es el error estándar del Gap Statistic.
+\end{formula}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{seleccion_k_multimetrica.png}
+    \caption{Análisis multi-métrica para selección del número óptimo de clusters. Panel superior izquierdo: Gap Statistic con barras de error. Panel superior derecho: Silhouette Score. Panel inferior izquierdo: Davies-Bouldin Index. Panel inferior derecho: Método del Codo (Inercia). Las líneas verticales punteadas indican el $k$ óptimo según cada métrica.}
+    \label{fig:seleccion_k}
+\end{figure}
+
+\begin{resultado}
+El análisis multi-métrica para valores de $k$ entre 2 y 10 reveló:
+
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{k} & \textbf{Gap Statistic} & \textbf{Silhouette} & \textbf{Davies-Bouldin} & \textbf{Inercia} \\
+\midrule
+2 & 0.942 & \textbf{0.608} & 0.777 & 59.82 \\
+3 & 1.086 & 0.587 & \textbf{0.482} & 40.84 \\
+4 & 1.271 & 0.360 & 0.721 & 27.46 \\
+5 & 1.332 & 0.288 & 0.812 & 21.06 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Valores óptimos por métrica}:
+\begin{itemize}
+    \item Gap Statistic: $k = 4$
+    \item Silhouette Score: $k = 2$ (máximo: 0.608)
+    \item Davies-Bouldin Index: $k = 3$ (mínimo: 0.482)
+\end{itemize}
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Decisión Final: k = 2}
+% ----------------------------------------------------------------------------
+
+\begin{advertencia}[title=Criterio de Parsimonia]
+Ante la divergencia entre métricas, se aplicó un \textbf{criterio de decisión formal} que pondera:
+\begin{itemize}
+    \item Calidad métrica (Silhouette, Davies-Bouldin, Calinski-Harabasz)
+    \item Principio de parsimonia (Occam's Razor): preferir modelos simples
+    \item Interpretabilidad económica de los clusters resultantes
+    \item Tamaño mínimo de clusters para evitar grupos espurios
+\end{itemize}
+
+La comparación formal entre $k=2$ y $k=9$ (soluciones extremas) favoreció $k=2$ por su mayor Silhouette Score (0.608 vs 0.331) y distribución balanceada de empresas.
+\end{advertencia}
+
+\begin{hallazgo}
+\textbf{Decisión final}: $k = 2$ clusters.
+
+\textbf{Justificación cuantitativa}:
+\begin{itemize}
+    \item \textbf{Silhouette Score}: 0.608 (rango aceptable: 0.5--0.7)
+    \item \textbf{Calinski-Harabasz}: 28.17
+    \item \textbf{Davies-Bouldin}: 0.777
+\end{itemize}
+
+\textbf{Distribución de empresas}:
+\begin{itemize}
+    \item Cluster 0: 26 empresas (86.7\%)
+    \item Cluster 1: 4 empresas (13.3\%)
+\end{itemize}
+
+El Silhouette Score de 0.608 indica una \textbf{estructura de clusters razonable}, con buena cohesión interna y separación entre grupos.
+\end{hallazgo}
+
+% ----------------------------------------------------------------------------
+\subsection{Validación Estadística: ANOVA}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Validación mediante ANOVA]
+Para verificar que los clusters identificados representan grupos estadísticamente distintos, se aplicó \textbf{ANOVA de un factor} a cada variable. La hipótesis nula es:
+\begin{equation}
+H_0: \mu_{C_0} = \mu_{C_1}
+\end{equation}
+
+Un p-valor $< 0.05$ indica diferencias estadísticamente significativas entre los centroides de los clusters para esa variable.
+\end{definicion}
+
+\begin{resultado}
+La validación ANOVA confirmó diferencias altamente significativas entre clusters en \textbf{todas las variables}:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Variable} & \textbf{F-statistic} & \textbf{p-valor} \\
+\midrule
+MeanReturn & 23.01 & $4.84 \times 10^{-5}$ \\
+Volatility & 62.38 & $1.33 \times 10^{-8}$ \\
+Beta & 32.69 & $3.92 \times 10^{-6}$ \\
+AvgVolume & 13.56 & $9.79 \times 10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Todos los p-valores son $< 0.001$, lo que confirma que los clusters capturan diferencias reales y estadísticamente robustas en las características financieras de las empresas.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Perfiles de los Clusters}
+% ----------------------------------------------------------------------------
+
+\begin{table}[H]
+\centering
+\caption{Perfiles estadísticos de los clusters identificados}
+\begin{tabular}{lccccl}
+\toprule
+\textbf{Cluster} & \textbf{N} & \textbf{Retorno} & \textbf{Volatilidad} & \textbf{Beta} & \textbf{Empresas Top} \\
+\midrule
+0 (Conservador) & 26 & 1.23\% & 9.20\% & 0.98 & AAPL, AMZN, NFLX \\
+1 (Agresivo) & 4 & 3.53\% & 19.04\% & 1.81 & NVDA, TSLA, PLTR \\
+\bottomrule
+\end{tabular}
+\label{tab:cluster_profiles}
+\end{table}
+
+\begin{concepto}[title=Interpretación Económica de los Clusters]
+Los dos clusters identificados corresponden a perfiles de inversión claramente diferenciados:
+
+\textbf{Cluster 0 --- Perfil Conservador} (26 empresas, 86.7\%):
+\begin{itemize}
+    \item \textbf{Beta promedio}: 0.98 (riesgo sistemático moderado, similar al mercado)
+    \item \textbf{Volatilidad}: 9.20\% mensual (dispersión controlada)
+    \item \textbf{Retorno}: 1.23\% mensual (rentabilidad estable)
+    \item \textbf{Caracterización}: Empresas tecnológicas maduras con flujos de caja establecidos
+    \item \textbf{Ejemplos}: Apple, Amazon, Microsoft, Alphabet, Netflix
+\end{itemize}
+
+\textbf{Cluster 1 --- Perfil Agresivo} (4 empresas, 13.3\%):
+\begin{itemize}
+    \item \textbf{Beta promedio}: 1.81 (alta sensibilidad al mercado)
+    \item \textbf{Volatilidad}: 19.04\% mensual (más del doble que Cluster 0)
+    \item \textbf{Retorno}: 3.53\% mensual (casi triple que Cluster 0)
+    \item \textbf{Caracterización}: Empresas de alto crecimiento con valuaciones especulativas
+    \item \textbf{Empresas}: Nvidia, Tesla, Palantir, Cloudflare
+\end{itemize}
+\end{concepto}
+
+\begin{nota}
+El Cluster 1 (Agresivo) agrupa precisamente las empresas que el análisis EDA identificó como outliers en términos de volatilidad y drawdown: Tesla (MDD: $-67.72\%$), Nvidia (MDD: $-62.82\%$), y Palantir (retorno extremo de +98.4\% en noviembre 2020). Esta coherencia entre el análisis exploratorio y el clustering valida la robustez de la segmentación.
+\end{nota}
+
+% ----------------------------------------------------------------------------
+\subsection{Visualización de Clusters}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Análisis de Componentes Principales (PCA)]
+Para visualizar los clusters en dos dimensiones, se aplicó \textbf{PCA} (\textit{Principal Component Analysis}) a la matriz normalizada. PCA transforma las variables originales en componentes ortogonales que maximizan la varianza explicada:
+
+\begin{equation}
+PC_1 = w_{11}X_1 + w_{12}X_2 + \cdots + w_{1p}X_p
+\end{equation}
+
+donde $w_{1j}$ son los pesos (\textit{loadings}) del primer componente principal. La proyección en 2D permite visualizar la separación entre clusters preservando la máxima información posible.
+\end{definicion}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{clustering/plots/pca_clusters.png}
+    \caption{Proyección PCA 2D de los clusters. Los dos primeros componentes principales explican el 66.2\% (PC1) y 18.8\% (PC2) de la varianza total, sumando 85.0\%. Se observa clara separación entre el Cluster 0 (conservador, azul) y Cluster 1 (agresivo, naranja).}
+    \label{fig:pca_clusters}
+\end{figure}
+
+\begin{resultado}
+La reducción dimensional mediante PCA reveló:
+\begin{itemize}
+    \item \textbf{Varianza explicada}: PC1 = 66.2\%, PC2 = 18.8\% (total: 85.0\%)
+    \item \textbf{Separación visual}: Clara distinción entre ambos clusters
+    \item \textbf{Cluster 1}: Ubicado en el cuadrante de alta variabilidad (PC1 positivo alto)
+    \item \textbf{Cluster 0}: Concentrado en la región central-izquierda del espacio PCA
+\end{itemize}
+La alta proporción de varianza explicada (85\%) indica que la proyección 2D preserva adecuadamente la estructura de los datos originales en 4 dimensiones.
+\end{resultado}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{clustering/plots/beta_vs_meanreturn_clusters.png}
+    \caption{Diagrama de dispersión Beta vs MeanReturn coloreado por cluster. El tamaño de cada punto es proporcional al volumen promedio (proxy de liquidez). Se observa que el Cluster 1 (agresivo) agrupa empresas con mayor beta y mayor retorno, mientras que el Cluster 0 (conservador) se concentra en la región de beta cercano a 1.}
+    \label{fig:beta_return_clusters}
+\end{figure}
+
+\begin{nota}
+El gráfico Beta vs MeanReturn ilustra la relación riesgo-retorno predicha por el modelo CAPM: empresas con mayor exposición sistemática (beta alto) tienden a exhibir mayores retornos esperados. El Cluster 1 (Nvidia, Tesla, Palantir, Cloudflare) representa el extremo de alto riesgo/alto retorno, mientras que el Cluster 0 agrupa empresas con perfil más equilibrado cercano al mercado ($\beta \approx 1$).
+\end{nota}
+
+% ----------------------------------------------------------------------------
+\subsection{Detección de Outliers por Cluster}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Outliers Intra-Cluster]
+Para identificar observaciones atípicas \textit{dentro} de cada cluster, se calculó el z-score de cada variable respecto a la distribución del cluster:
+
+\begin{equation}
+z_{i,c} = \frac{x_i - \mu_c}{\sigma_c}
+\end{equation}
+
+Una empresa se considera outlier intra-cluster si $|z| > 2$ en alguna dimensión.
+\end{definicion}
+
+\begin{resultado}
+La detección de outliers intra-cluster reveló:
+
+\textbf{Cluster 0} (26 empresas) --- 7 outliers detectados:
+\begin{itemize}
+    \item \textbf{Por volumen extremo}: Apple (\$2.09B), Amazon (\$1.59B), Netflix (\$1.52B)
+    \item \textbf{Por beta atípico}: Spotify ($\beta = 1.60$), Tencent ($\beta = 0.40$)
+    \item \textbf{Por retorno negativo}: Intel ($r = -0.86\%$), Snowflake ($r = -0.95\%$)
+\end{itemize}
+
+\textbf{Cluster 1} (4 empresas): Tamaño insuficiente para detección robusta de outliers ($n < 5$).
+
+Estos outliers representan empresas en los extremos de sus respectivos clusters, pero que comparten características suficientes para pertenecer al grupo.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Síntesis del Análisis de Clustering}
+% ----------------------------------------------------------------------------
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Conclusiones del Análisis de Clustering,
+    sharp corners,
+    boxrule=1.5pt
+]
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em]
+    \item \textbf{Segmentación óptima}: El análisis multi-métrica (Gap Statistic, Silhouette, Davies-Bouldin) determinó $k=2$ como el número óptimo de clusters, balanceando parsimonia e interpretabilidad.
+    
+    \item \textbf{Calidad del clustering}: Silhouette Score de 0.608 indica estructura razonable. ANOVA confirma diferencias altamente significativas ($p < 0.001$) entre clusters en todas las variables.
+    
+    \item \textbf{Cluster Conservador} (26 empresas, 86.7\%): Empresas tecnológicas maduras con $\beta \approx 1$, volatilidad del 9.2\% y retorno del 1.23\% mensual. Incluye: Apple, Microsoft, Amazon, Alphabet.
+    
+    \item \textbf{Cluster Agresivo} (4 empresas, 13.3\%): Empresas de alto crecimiento con $\beta = 1.81$, volatilidad del 19\% y retorno del 3.53\% mensual. Incluye: Nvidia, Tesla, Palantir, Cloudflare.
+    
+    \item \textbf{Coherencia con EDA}: El Cluster Agresivo agrupa las mismas empresas identificadas como outliers en volatilidad y drawdown, validando la robustez del análisis.
+    
+    \item \textbf{Implicaciones para inversión}: La segmentación permite construir portafolios diferenciados según perfil de riesgo del inversor --- conservador (Cluster 0) vs agresivo (Cluster 1).
+\end{enumerate}
+\end{tcolorbox}
+
+% ============================================================================
+% SECCIÓN 3: ANÁLISIS DE REGRESIÓN
+% ============================================================================
+\newpage
+\section{Análisis de Regresión}
+
+\begin{concepto}
+El \textbf{análisis de regresión} constituye la herramienta fundamental de la econometría financiera moderna. Busca cuantificar la relación entre una variable dependiente (el retorno o la volatilidad de un activo) y variables independientes o explicativas (retorno del mercado, factores de riesgo, características de la empresa).
+
+\vspace{0.3cm}
+Como señalan Wooldridge (\textit{Introductory Econometrics: A Modern Approach}, 2020) y Greene (\textit{Econometric Analysis}, 8ª edición, 2018), la regresión lineal múltiple constituye el pilar tanto de la inferencia causal como de la predicción en ciencias sociales y finanzas.
+
+El objetivo de esta sección es estimar dos modelos de regresión complementarios:
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.}]
+    \item \textbf{Regresión lineal simple}: Explicar volatilidad mediante correlación con el mercado
+    \item \textbf{Regresión CAPM individual}: Estimar el coeficiente beta para cada empresa
+\end{enumerate}
+\end{concepto}
+
+% ----------------------------------------------------------------------------
+\subsection{Modelo CAPM: Especificación y Estimación}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Modelo CAPM (Capital Asset Pricing Model)]
+El modelo CAPM, desarrollado por Sharpe (1964) y formalizado en su obra \textit{``Capital Asset Prices: A Theory of Market Equilibrium under Conditions of Risk''}, (\textit{The Journal of Finance}, Vol. 19, No. 3, 1964, pp. 425--442), especifica que el exceso de retorno de un activo es proporcional al exceso de retorno del portafolio de mercado:
+
+\begin{equation}
+R_i - R_f = \alpha_i + \beta_i(R_m - R_f) + \varepsilon_i
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item $R_i$: retorno del activo $i$ en el período
+    \item $R_f$: tasa libre de riesgo (típicamente asuida como 0 en análisis de retornos puros)
+    \item $R_m$: retorno del portafolio de mercado
+    \item $\beta_i$: coeficiente beta (medida de riesgo sistemático)
+    \item $\alpha_i$: alfa (rendimiento anormal no explicado por el mercado)
+    \item $\varepsilon_i$: término de error (riesgo idiosincrático)
+\end{itemize}
+
+En el contexto de este análisis, utilizamos el retorno directo sin ajuste por tasa libre de riesgo (asumiendo $R_f \approx 0$ para retornos mensuales), produciendo:
+
+\begin{equation}
+R_{i,t} = \alpha_i + \beta_i R_{m,t} + \varepsilon_{i,t}
+\end{equation}
+
+\end{definicion}
+
+\begin{advertencia}[title=Interpretación de Beta]
+El coeficiente $\beta_i$ cuantifica la sensibilidad de la empresa $i$ al movimiento del mercado:
+\begin{itemize}
+    \item $\beta_i < 1$: Empresa \textbf{defensiva}; volatilidad menor que el mercado
+    \item $\beta_i = 1$: Empresa con riesgo sistemático igual al mercado
+    \item $\beta_i > 1$: Empresa \textbf{agresiva}; volatilidad mayor que el mercado
+\end{itemize}
+
+Un $\beta$ grande implica que la empresa amplifica los movimientos del mercado, por lo que requiere un retorno esperado más alto (según CAPM) para compensar el riesgo adicional.
+\end{advertencia}
+
+\begin{resultado}
+La estimación CAPM individual para las 30 empresas reveló:
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Estadístico} & \textbf{Valor} & \textbf{Empresa} & \textbf{Beta Mín.} & \textbf{Beta Máx.} \\
+\midrule
+Media ($\bar{\beta}$) & 1.4332 & --- & -0.6622 & 2.8205 \\
+Mediana & 1.4091 & --- & (Palantir) & (Spotify) \\
+Desv. Est. & 0.7610 & --- & --- & --- \\
+Significativas ($p < 0.05$) & 13/30 (43.3\%) & --- & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item Promedio de betas de 1.43 indica que el sector tecnológico es \textbf{significativamente más volátil} que el mercado general
+    \item Sólo 43.3\% de las empresas presentan betas estadísticamente significativas a nivel 5\%, sugiriendo alta variabilidad en la sensibilidad al mercado
+    \item La empresa más defensiva es Palantir ($\beta = -0.66$), mientras que Spotify exhibe máxima sensibilidad ($\beta = 2.82$)
+\end{itemize}
+\end{resultado}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{regression/plots/P3_regression_diagnostics.png}
+    \caption{Panel de diagnósticos de regresión agregada. Superior izquierdo: Relación entre volatilidad y correlación con mercado (Volatility = 0.1461 - 0.2074 × Correlation, $R^2 = 0.1852$). Superior derecho: Residuales vs valores ajustados; la tendencia LOWESS visualiza patrones. Inferior izquierdo: Q-Q plot verificando normalidad de residuales. Inferior derecho: Histograma de residuales con test Shapiro-Wilk.}
+    \label{fig:regression_diagnostics}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+\subsection{Regresión Lineal Simple: Volatilidad vs Correlación}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title={Relación entre Volatilidad y Correlación con Mercado}]
+Un análisis complementario al CAPM individual busca responder si la \textbf{volatilidad de una empresa está inversamente relacionada con su correlación con el mercado}. 
+
+La intuición subyacente es que una empresa altamente correlacionada con el mercado (high beta/correlación) puede tener volatilidad más predecible y, por tanto, menor volatilidad total. Inversamente, una empresa con baja correlación exhibe movimientos más propios (riesgo idiosincrático), posiblemente reflejado en mayor volatilidad total.
+
+El modelo estimado es:
+\begin{equation}
+\sigma_i = \beta_0 + \beta_1 \rho_{i,m} + \varepsilon_i
+\end{equation}
+
+donde $\sigma_i$ es la volatilidad (desviación estándar de retornos) y $\rho_{i,m}$ es la correlación de Pearson entre retornos de la empresa $i$ y el mercado $m$.
+\end{concepto}
+
+\begin{formula}[title={Estimación OLS}]
+La regresión lineal simple se estima mediante Mínimos Cuadrados Ordinarios (OLS, \textit{Ordinary Least Squares}):
+
+\begin{equation}
+\hat{\beta}_1 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n}(x_i - \bar{x})^2}, \quad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+\end{equation}
+
+La bondad de ajuste se mide mediante $R^2 = 1 - \frac{\sum \hat{\varepsilon}_i^2}{\sum (y_i - \bar{y})^2}$, que representa la proporción de varianza explicada por el modelo.
+\end{formula}
+
+\begin{resultado}
+El análisis de regresión lineal simple para el panel de 30 empresas reveló:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Parámetro} & \textbf{Estimado} & \textbf{Estadístico t / p-valor} \\
+\midrule
+$\beta_0$ (Intercepto) & 0.1461 & $t = 6.47$ \\
+$\beta_1$ (Pendiente) & $-0.2074$ & $t = -2.09$, $p = 0.0801$ \\
+$R^2$ & 0.1852 & (F = 3.0625, $p = 0.0911$) \\
+$R^2$ ajustado & 0.1561 & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item \textbf{Coeficiente negativo}: Un incremento de 0.1 en la correlación con el mercado se asocia con una \textbf{reducción de 0.0207 (2.07 puntos porcentuales) en volatilidad}
+    \item \textbf{Significancia marginal}: El coeficiente $\beta_1$ es marginalmente significativo ($p = 0.081$), sugeriendo una relación débil pero direccionalmente consistente
+    \item \textbf{Bajo $R^2$}: Solo el 18.5\% de la varianza en volatilidad se explica por correlación con el mercado, indicando que otros factores (tamaño, sector, régimen) juegan un papel importante
+\end{itemize}
+
+La relación negativa sugiere que las empresas con mayor sensibilidad sistemática (mayor correlación) tienden a presentar volatilidades ligeramente menores, consistente con el efecto diversificador del riesgo sistemático.
+\end{resultado}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{regression/plots/P3_companies_labeled.png}
+    \caption{Regresión de volatilidad contra correlación con mercado, con empresas etiquetadas. La pendiente negativa indica que empresas con mayor correlación tienden a tener menores volatilidades. Empresas atípicas como Palantir (volatilidad extrema sin correlación), Cloudflare y Tesla (alto en ambas dimensiones) se destacan visualmente.}
+    \label{fig:regression_companies}
+\end{figure}
+
+\begin{nota}
+El gráfico revela outliers importantes: Palantir (alta volatilidad, baja correlación), Tesla (ambas altas), Nvidia (volatilidad alta), Netflix (volatilidad media-alta). Estos outliers contribuyen a la baja $R^2$ del modelo global pero ofrecen oportunidades analíticas para investigar factores empresa-específicos que no son capturados por la correlación con el mercado.
+\end{nota}
+
+% ----------------------------------------------------------------------------
+\subsection{Validación de Supuestos de la Regresión}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title={Supuestos Clásicos del Modelo OLS}]
+Para que los estimadores OLS sean insesgados y eficientes, se requieren (Gauss-Markov Theorem):
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item \textbf{Linealidad}: La relación es lineal en parámetros
+    \item \textbf{Exogeneidad}: $E[\varepsilon|X] = 0$ (errores independientes de regresores)
+    \item \textbf{No colinealidad}: No hay combinaciones lineales exactas entre regresores
+    \item \textbf{Homocedasticidad}: $\text{Var}(\varepsilon|X) = \sigma^2$ (varianza constante)
+    \item \textbf{Normalidad}: $\varepsilon \sim N(0, \sigma^2)$ (para inferencia exacta)
+\end{enumerate}
+\end{definicion}
+
+\begin{resultado}
+El análisis de supuestos mediante las figuras de diagnóstico reveló:
+
+\begin{itemize}
+    \item \textbf{Normalidad de residuales}: Test Shapiro-Wilk con $p = 0.1224$ sugiere \textbf{no rechazo de normalidad} (la distribución de residuales es aproximadamente normal)
+    \item \textbf{Homocedasticidad}: Panel superior derecho (Residuales vs Ajustados) no muestra patrón claro de heteroscedasticidad; la tendencia LOWESS es aproximadamente plana
+    \item \textbf{Linealidad}: La relación entre variables se aproxima adecuadamente mediante una línea recta, aunque con considerable dispersión
+    \item \textbf{Q-Q Plot}: Desviaciones menores en las colas indican colas levemente más pesadas que la normal, consistente con datos financieros reales
+\end{itemize}
+
+En conclusión, los supuestos básicos son \textbf{aproximadamente satisfechos}, validando el uso de OLS para estimación.
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Síntesis del Análisis de Regresión}
+% ----------------------------------------------------------------------------
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Conclusiones del Análisis de Regresión,
+    sharp corners,
+    boxrule=1.5pt
+]
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em]
+    \item \textbf{Betas CAPM}: La estimación individual de betas para 30 empresas reveló un promedio de 1.43 (mediana: 1.41), indicando que el sector tecnológico es significativamente más volátil que el mercado. Sólo 43.3\% de los coeficientes beta son estadísticamente significativos a nivel 5\%.
+    
+    \item \textbf{Heterogeneidad de sensibilidad}: Beta varía de -0.66 (Palantir, defensiva) a 2.82 (Spotify, altamente agresiva), reflejando la diversidad de estrategias y capitalización del sector.
+    
+    \item \textbf{Volatilidad vs Correlación}: La regresión simple revela relación negativa débil: mayor correlación con mercado asociada con menor volatilidad total ($\beta_1 = -0.207$, $p = 0.081$), con bajo $R^2 = 0.185$.
+    
+    \item \textbf{Validación de supuestos}: Los residuales satisfacen aproximadamente normalidad (Shapiro-Wilk $p = 0.122$) y homocedasticidad, validando el uso de OLS.
+    
+    \item \textbf{Implicaciones para inversión}: Los coeficientes beta estimados permiten ajustar carteras por riesgo sistemático. El bajo $R^2$ en volatilidad vs correlación sugiere que factores idiosincrásicos (específicos de cada empresa) juegan un papel dominante en la volatilidad total.
+\end{enumerate}
+\end{tcolorbox}
+
+% ============================================================================
+% SECCIÓN 4: INFERENCIA ESTADÍSTICA
+% ============================================================================
+\newpage
+\section{Inferencia Estadística}
+
+\begin{concepto}
+La \textbf{inferencia estadística} constituye el núcleo de la estadística aplicada, permitiendo extraer conclusiones sobre poblaciones a partir de muestras. En el contexto de finanzas cuantitativas, nos interesa responder preguntas como: ¿Es el retorno medio de una empresa significativamente distinto de cero? ¿Difieren los retornos entre grupos de empresas de alto y bajo riesgo sistemático?
+
+\vspace{0.3cm}
+Esta sección aborda tres pilares fundamentales de la inferencia:
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.}]
+    \item \textbf{Intervalos de confianza}: Estimación de rangos plausibles para parámetros poblacionales
+    \item \textbf{Pruebas de hipótesis}: Contraste formal de afirmaciones sobre parámetros
+    \item \textbf{Métodos de remuestreo}: Bootstrap y pruebas de permutación para inferencia robusta
+\end{enumerate}
+
+Como señalan Efron \& Tibshirani (\textit{An Introduction to the Bootstrap}, 1993) y Wasserman (\textit{All of Statistics}, 2004), los métodos de remuestreo complementan la inferencia clásica cuando los supuestos paramétricos son cuestionables.
+\end{concepto}
+
+% ----------------------------------------------------------------------------
+\subsection{Intervalos de Confianza para Retornos Medios}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Intervalo de Confianza t de Student]
+Para una muestra de tamaño $n$ con media $\bar{x}$ y desviación estándar muestral $s$, el intervalo de confianza al $(1-\alpha)\%$ para la media poblacional $\mu$ está dado por:
+
+\begin{equation}
+IC_{1-\alpha}(\mu) = \bar{x} \pm t_{\alpha/2, n-1} \cdot \frac{s}{\sqrt{n}}
+\end{equation}
+
+donde $t_{\alpha/2, n-1}$ es el cuantil $(1-\alpha/2)$ de la distribución $t$ de Student con $n-1$ grados de libertad. Este intervalo requiere el supuesto de normalidad o un tamaño muestral suficientemente grande (teorema central del límite).
+\end{definicion}
+
+\begin{definicion}[title=Intervalo de Confianza Bootstrap]
+El método bootstrap (Efron, 1979) estima la distribución muestral del estimador mediante remuestreo con reemplazo. Para la media, se procede:
+\begin{enumerate}[label=\textcolor{theoremborder}{\arabic*.}]
+    \item Generar $B$ muestras bootstrap $\{x_1^*, \ldots, x_n^*\}$ mediante muestreo con reemplazo
+    \item Calcular $\bar{x}^*_b$ para cada réplica $b = 1, \ldots, B$
+    \item El IC percentil se obtiene como: $[q_{\alpha/2}(\bar{x}^*), q_{1-\alpha/2}(\bar{x}^*)]$
+\end{enumerate}
+
+El método BCa (\textit{Bias-Corrected and Accelerated}) ajusta los cuantiles por sesgo y asimetría, produciendo intervalos más precisos en muestras pequeñas.
+\end{definicion}
+
+\begin{resultado}
+El análisis de intervalos de confianza al 95\% para las 30 empresas reveló:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Empresa} & \textbf{Media Mensual} & \textbf{IC t-Student} & \textbf{IC Bootstrap} \\
+\midrule
+Palantir & 0.041 & $[-0.029, 0.111]$ & $[-0.024, 0.115]$ \\
+Nvidia & 0.038 & $[0.007, 0.068]$ & $[0.006, 0.068]$ \\
+Tesla & 0.035 & $[-0.007, 0.076]$ & $[-0.003, 0.076]$ \\
+Broadcom & 0.030 & $[0.010, 0.050]$ & $[0.010, 0.050]$ \\
+Fortinet & 0.028 & $[0.004, 0.052]$ & $[0.004, 0.051]$ \\
+ServiceNow & 0.024 & $[0.006, 0.041]$ & $[0.007, 0.041]$ \\
+Apple & 0.022 & $[0.004, 0.041]$ & $[0.004, 0.040]$ \\
+Microsoft & 0.019 & $[0.006, 0.032]$ & $[0.006, 0.032]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item Los intervalos t-Student y bootstrap son altamente concordantes, validando la robustez de las estimaciones
+    \item Empresas con IC que \textbf{excluyen cero} (Nvidia, Broadcom, Microsoft, Apple, ServiceNow, Fortinet) presentan retornos medios estadísticamente significativos
+    \item Empresas con alta volatilidad (Palantir, Tesla) tienen intervalos más amplios, reflejando mayor incertidumbre
+\end{itemize}
+\end{resultado}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{forestplot_ci.png}
+    \caption{Forest plot de intervalos de confianza al 95\% para retornos medios mensuales por empresa. La línea roja vertical marca el cero (retorno nulo). Empresas cuyo IC no cruza el cero exhiben retornos estadísticamente significativos.}
+    \label{fig:forestplot_ci}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+\subsection{Pruebas de Normalidad}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Test de Shapiro-Wilk]
+El test de Shapiro-Wilk (1965) evalúa la hipótesis nula de que una muestra proviene de una distribución normal. El estadístico $W$ mide la correlación entre los datos ordenados y los cuantiles normales esperados:
+
+\begin{equation}
+W = \frac{\left(\sum_{i=1}^{n} a_i x_{(i)}\right)^2}{\sum_{i=1}^{n}(x_i - \bar{x})^2}
+\end{equation}
+
+Valores de $W$ cercanos a 1 indican normalidad. Se rechaza $H_0$ si $p < \alpha$.
+\end{definicion}
+
+\begin{resultado}
+El análisis de normalidad por empresa (con corrección FDR por comparaciones múltiples) reveló:
+
+\begin{itemize}
+    \item \textbf{Mayoría aproximadamente normal}: La mayoría de las distribuciones de retornos no rechazan normalidad después de corrección por múltiples tests
+    \item \textbf{Colas pesadas}: Los Q-Q plots muestran desviaciones en las colas extremas, patrón típico de retornos financieros (\textit{stylized facts})
+    \item \textbf{Justificación de métodos no paramétricos}: Ante la evidencia de no normalidad estricta, los métodos bootstrap y de permutación proporcionan inferencia más robusta
+\end{itemize}
+\end{resultado}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{normality_diagnostic.png}
+    \caption{Diagnóstico de normalidad para empresas representativas. Histogramas de retornos mensuales con línea de media (rojo) y Q-Q plots superpuestos. Las desviaciones en las colas son típicas de datos financieros.}
+    \label{fig:normality_diagnostic}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+\subsection{Pruebas t de Una Muestra}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Test t de Una Muestra]
+El test t de una muestra evalúa si la media poblacional $\mu$ difiere de un valor hipotético $\mu_0$. El estadístico de prueba es:
+
+\begin{equation}
+t = \frac{\bar{x} - \mu_0}{s/\sqrt{n}} \sim t_{n-1}
+\end{equation}
+
+La hipótesis nula $H_0: \mu = \mu_0$ se rechaza si $|t| > t_{\alpha/2, n-1}$.
+\end{definicion}
+
+\begin{resultado}
+Los tests t de una muestra ($H_0: \mu = 0$) para las 30 empresas, con correcciones por comparaciones múltiples:
+
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Empresa} & \textbf{n} & \textbf{Media} & \textbf{t-stat} & \textbf{p} & \textbf{p (FDR)} & \textbf{Cohen's d} \\
+\midrule
+Broadcom & 83 & 0.030 & 2.94 & 0.004 & 0.069 & 0.32 \\
+Microsoft & 83 & 0.019 & 2.91 & 0.005 & 0.069 & 0.32 \\
+ServiceNow & 83 & 0.024 & 2.74 & 0.008 & 0.076 & 0.30 \\
+Nvidia & 83 & 0.038 & 2.44 & 0.017 & 0.105 & 0.27 \\
+Apple & 83 & 0.022 & 2.43 & 0.017 & 0.105 & 0.27 \\
+Fortinet & 83 & 0.028 & 2.35 & 0.021 & 0.107 & 0.26 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item Tras corrección FDR (Benjamini-Hochberg), \textbf{ninguna empresa alcanza significancia} al nivel $\alpha = 0.05$, reflejando el costo de las comparaciones múltiples
+    \item Sin corrección, 6 empresas presentarían $p < 0.05$: Broadcom, Microsoft, ServiceNow, Nvidia, Apple, Fortinet
+    \item Los tamaños del efecto (Cohen's d) son pequeños a moderados (0.26--0.32), indicando efectos económicamente modestos
+\end{itemize}
+\end{resultado}
+
+\begin{advertencia}[title=Corrección por Comparaciones Múltiples]
+Al realizar $m$ tests simultáneos, la probabilidad de al menos un falso positivo aumenta a $1 - (1-\alpha)^m$. Para $m=30$ y $\alpha=0.05$, esta probabilidad es del 78.5\%.
+
+La corrección \textbf{FDR (False Discovery Rate)} de Benjamini-Hochberg (1995) controla la proporción esperada de falsos descubrimientos, siendo menos conservadora que Bonferroni pero más apropiada para análisis exploratorios.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Comparación de Grupos: Beta Bajo vs Alto}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Comparación de Dos Muestras Independientes]
+Cuando interesa comparar parámetros entre dos grupos, se emplean:
+\begin{itemize}
+    \item \textbf{Test t de Welch}: Robusto a varianzas desiguales, evalúa $H_0: \mu_1 = \mu_2$
+    \item \textbf{Test de Mann-Whitney U}: No paramétrico, evalúa si una distribución tiende a producir valores mayores
+    \item \textbf{Test de Levene}: Evalúa homogeneidad de varianzas ($H_0: \sigma_1^2 = \sigma_2^2$)
+    \item \textbf{Test de permutación}: Aproxima la distribución nula mediante reasignación aleatoria de etiquetas
+\end{itemize}
+\end{concepto}
+
+\begin{resultado}
+Se compararon empresas con $\beta \leq 1$ (defensivas) vs $\beta > 1$ (agresivas):
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Métrica} & \textbf{Beta $\leq$ 1} & \textbf{Beta $>$ 1} \\
+\midrule
+Observaciones (mensuales) & 1,296 & 1,107 \\
+Retorno medio mensual & 0.011 (1.1\%) & 0.020 (2.0\%) \\
+\midrule
+\textbf{Test} & \textbf{Estadístico} & \textbf{p-valor} \\
+\midrule
+Welch t-test & $t = -1.814$ & $p = 0.070$ \\
+Hedges' g (efecto) & \multicolumn{2}{c}{$g = -0.077$ (pequeño)} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item Las empresas de alto beta presentan retornos promedio 0.9\% mayores (mensuales), pero la diferencia es \textbf{marginalmente no significativa} ($p = 0.070$)
+    \item El tamaño del efecto (Hedges' $g = -0.077$) es \textbf{muy pequeño}, indicando poca relevancia práctica
+    \item La falta de significancia puede deberse a alta variabilidad intragrupo y tamaño del efecto modesto
+\end{itemize}
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Comparación de Volatilidades: Test de Levene}
+% ----------------------------------------------------------------------------
+
+\begin{resultado}
+Se evaluó si la volatilidad difiere entre empresas de alto y bajo beta:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Grupo} & \textbf{n (empresas)} & \textbf{Volatilidad media} \\
+\midrule
+Beta $\leq$ 1 & 16 & 0.085 (8.5\%) \\
+Beta $>$ 1 & 14 & 0.128 (12.8\%) \\
+\midrule
+\textbf{Test de Levene} & Estadístico = 4.37 & $p = 0.046$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item El test de Levene \textbf{rechaza la igualdad de varianzas} ($p = 0.046 < 0.05$)
+    \item Las empresas de alto beta exhiben volatilidades significativamente mayores (12.8\% vs 8.5\%)
+    \item Este resultado es consistente con la teoría CAPM: mayor riesgo sistemático ($\beta$) implica mayor volatilidad total
+\end{itemize}
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Bootstrap para Diferencia de Medias}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Bootstrap BCa (Bias-Corrected and Accelerated)]
+El método BCa mejora el bootstrap percentil mediante:
+\begin{equation}
+\text{CI}_{BCa} = \left[ \hat{\theta}^*_{(\alpha_1)}, \hat{\theta}^*_{(\alpha_2)} \right]
+\end{equation}
+donde los índices $\alpha_1, \alpha_2$ se ajustan por:
+\begin{itemize}
+    \item \textbf{Corrección de sesgo} ($\hat{z}_0$): Proporción de réplicas menores que el estimador original
+    \item \textbf{Aceleración} ($\hat{a}$): Derivada del estimador respecto a cambios en los datos (jackknife)
+\end{itemize}
+\end{definicion}
+
+\begin{resultado}
+Bootstrap para diferencia de volatilidades entre grupos (5,000 réplicas):
+
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\
+\midrule
+Diferencia observada (Low - High) & $-0.043$ ($-4.3\%$) \\
+IC 95\% Percentil & $[-0.070, -0.019]$ \\
+IC 95\% BCa & $[-0.074, -0.022]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item Ambos intervalos \textbf{excluyen cero}, confirmando que las volatilidades difieren significativamente
+    \item El IC BCa es ligeramente más amplio (más conservador), ajustando por asimetría
+    \item Empresas de bajo beta tienen volatilidad 4.3\% menor en promedio
+\end{itemize}
+\end{resultado}
+
+% ----------------------------------------------------------------------------
+\subsection{Análisis de Potencia Estadística}
+% ----------------------------------------------------------------------------
+
+\begin{definicion}[title=Potencia de un Test]
+La \textbf{potencia} ($1 - \beta$) de un test es la probabilidad de rechazar $H_0$ cuando $H_1$ es verdadera. Depende de:
+\begin{itemize}
+    \item Tamaño del efecto ($d$): Magnitud de la diferencia a detectar
+    \item Tamaño muestral ($n$): Muestras mayores incrementan la potencia
+    \item Nivel de significancia ($\alpha$): Mayor $\alpha$ aumenta potencia pero también error tipo I
+\end{itemize}
+
+Un estudio con potencia $< 0.80$ se considera \textbf{sub-potenciado} y puede fallar en detectar efectos reales.
+\end{definicion}
+
+\begin{resultado}
+Análisis de potencia post-hoc para la comparación de retornos entre grupos Beta:
+
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} \\
+\midrule
+Cohen's d observado & $-0.077$ \\
+$n_1$ (Beta $\leq$ 1) & 1,296 \\
+$n_2$ (Beta $>$ 1) & 1,107 \\
+Potencia estimada & \textbf{0.464} (46.4\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item La potencia del 46.4\% es \textbf{insuficiente} para detectar efectos pequeños con confiabilidad
+    \item Para detectar el efecto observado ($d = 0.077$) con potencia del 80\%, se requerirían aproximadamente 2,600 observaciones por grupo
+    \item El resultado $p = 0.070$ (marginalmente no significativo) debe interpretarse con cautela: podría representar un falso negativo debido a potencia insuficiente
+\end{itemize}
+\end{resultado}
+
+\begin{advertencia}[title=Limitación del Análisis de Potencia Post-Hoc]
+El análisis de potencia post-hoc usando el tamaño del efecto observado tiene limitaciones conceptuales: el efecto observado puede diferir del efecto poblacional verdadero. No obstante, proporciona una guía útil para interpretar resultados no significativos y planificar estudios futuros.
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Comparación de Betas: QQQ vs Mercado Equal-Weighted}
+% ----------------------------------------------------------------------------
+
+\begin{concepto}[title=Sensibilidad al Benchmark]
+La estimación de $\beta$ depende del índice de mercado utilizado como benchmark. Se compararon:
+\begin{itemize}
+    \item \textbf{QQQ}: ETF que replica el NASDAQ-100, ponderado por capitalización
+    \item \textbf{Equal-Weighted}: Mercado construido promediando retornos de las 30 empresas con igual peso
+\end{itemize}
+
+Un mercado ponderado por capitalización sobrepondera empresas grandes (Apple, Microsoft), mientras que el igual-ponderado trata todas las empresas simétricamente.
+\end{concepto}
+
+\begin{resultado}
+Comparación de betas estimadas con ambos benchmarks:
+
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\
+\midrule
+Empresas analizadas (CAPM QQQ) & 30 \\
+Empresas analizadas (CAPM EQW) & 30 \\
+Correlación entre betas & \textbf{0.970} \\
+Diferencia absoluta promedio & 0.106 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Interpretación}:
+\begin{itemize}
+    \item Alta correlación (0.97) indica que la elección del benchmark tiene impacto limitado en el ranking relativo de sensibilidades
+    \item La diferencia absoluta promedio de 0.106 sugiere que empresas individuales pueden tener betas ligeramente distintas según el benchmark
+    \item Empresas grandes (Apple, Microsoft) exhiben betas más cercanas entre benchmarks; empresas más pequeñas o especializadas muestran mayor divergencia
+\end{itemize}
+\end{resultado}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{beta_qqq_vs_eqw_scatter.png}
+    \caption{Comparación de betas estimadas usando QQQ vs mercado equal-weighted. La línea diagonal roja indica perfecta concordancia ($\beta_{QQQ} = \beta_{EQW}$). Empresas etiquetadas muestran las mayores divergencias entre benchmarks.}
+    \label{fig:beta_comparison}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+\subsection{Síntesis del Análisis de Inferencia}
+% ----------------------------------------------------------------------------
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Conclusiones del Análisis de Inferencia Estadística,
+    sharp corners,
+    boxrule=1.5pt
+]
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em]
+    \item \textbf{Intervalos de Confianza}: Los ICs t-Student y bootstrap son altamente concordantes, validando las estimaciones. Empresas como Nvidia, Broadcom, Microsoft y Apple exhiben retornos medios significativamente positivos.
+    
+    \item \textbf{Corrección por Múltiples Tests}: Tras corrección FDR, ninguna empresa alcanza significancia individual, ilustrando la importancia de ajustar por comparaciones múltiples en análisis de paneles.
+    
+    \item \textbf{Comparación Beta Low vs High}: Las empresas de alto beta ($\beta > 1$) exhiben retornos 0.9\% mayores en promedio, pero la diferencia es marginalmente no significativa ($p = 0.070$) con efecto pequeño ($g = -0.077$).
+    
+    \item \textbf{Diferencia en Volatilidades}: El test de Levene confirma que empresas de alto beta tienen volatilidades significativamente mayores ($p = 0.046$), consistente con teoría CAPM.
+    
+    \item \textbf{Bootstrap}: Los intervalos BCa para diferencia de volatilidades excluyen cero, confirmando diferencias robustas entre grupos de riesgo.
+    
+    \item \textbf{Potencia Estadística}: La potencia del 46.4\% para detectar el efecto observado sugiere que resultados no significativos deben interpretarse con cautela; estudios futuros requerirían muestras mayores.
+    
+    \item \textbf{Robustez de Betas}: La alta correlación (0.97) entre betas QQQ y equal-weighted indica que las conclusiones sobre riesgo sistemático son robustas a la elección del benchmark.
+\end{enumerate}
+\end{tcolorbox}
+
+% ============================================================================
+% SECCIÓN 5: RESULTADOS Y CONCLUSIONES
+% ============================================================================
+\newpage
+\section{Resultados y Conclusiones}
+
+Esta sección sintetiza los hallazgos más importantes del análisis estadístico, respondiendo directamente a las preguntas de investigación formuladas en la introducción con base en la evidencia empírica obtenida.
+
+% ----------------------------------------------------------------------------
+\subsection{Respuestas a las Preguntas de Investigación}
+% ----------------------------------------------------------------------------
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=definitiongreen,
+    colframe=definitionborder,
+    fonttitle=\bfseries\large,
+    title={P1: Estructura de Riesgo-Retorno del Sector Tecnológico},
+    sharp corners,
+    boxrule=1.5pt
+]
+\textbf{Pregunta}: ¿Cuál es la estructura de riesgo-retorno de las empresas tecnológicas del NASDAQ-100 y cómo se comparan entre sí?
+
+\vspace{0.3cm}
+\textbf{Respuesta basada en evidencia}:
+
+El análisis exploratorio reveló una \textbf{alta heterogeneidad} en el perfil riesgo-retorno del sector:
+
+\begin{itemize}
+    \item \textbf{Retornos}: Media mensual de 1.5\%, con rango de $-0.9\%$ (Intel) a $+4.1\%$ (Palantir)
+    \item \textbf{Volatilidad}: Media de 10.5\%, con empresas de baja volatilidad (Accenture: 7.2\%) hasta alta (Palantir: 24.8\%)
+    \item \textbf{Distribución}: El 73.3\% presenta leptocurtosis (colas pesadas), indicando mayor probabilidad de eventos extremos que la distribución normal
+    \item \textbf{Drawdown}: Tesla y Nvidia sufrieron caídas máximas superiores al 60\%, evidenciando riesgo de pérdida significativo
+\end{itemize}
+
+\textbf{Implicación}: Los modelos de riesgo basados en supuestos gaussianos subestiman sistemáticamente la probabilidad de eventos extremos en el sector tecnológico.
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=theoremblue,
+    colframe=theoremborder,
+    fonttitle=\bfseries\large,
+    title={P2: Segmentación Natural del Sector mediante Clustering},
+    sharp corners,
+    boxrule=1.5pt
+]
+\textbf{Pregunta}: ¿Existen grupos naturales de empresas con perfiles de riesgo similares?
+
+\vspace{0.3cm}
+\textbf{Respuesta basada en evidencia}:
+
+El análisis de clustering K-Means con $k=2$ (seleccionado mediante Gap Statistic, Silhouette y Davies-Bouldin) identificó dos segmentos claramente diferenciados:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Cluster} & \textbf{n} & \textbf{$\bar{\beta}$} & \textbf{Volatilidad} \\
+\midrule
+Cluster 0 (Defensivo) & 26 (86.7\%) & 0.98 & 9.2\% \\
+Cluster 1 (Agresivo) & 4 (13.3\%) & 1.81 & 19.0\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+    \item \textbf{Validación estadística}: ANOVA confirmó diferencias significativas entre clusters ($p < 0.001$ para volatilidad y beta)
+    \item \textbf{Silueta promedio}: 0.52, indicando separación moderada-buena
+    \item \textbf{Empresas agresivas}: Nvidia, Tesla, Palantir, Cloudflare
+\end{itemize}
+
+\textbf{Implicación}: La segmentación permite construir portafolios diferenciados según el perfil de riesgo del inversor.
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=formulablue,
+    colframe=formulaborder,
+    fonttitle=\bfseries\large,
+    title={P3: Sensibilidad al Riesgo Sistemático (CAPM)},
+    sharp corners,
+    boxrule=1.5pt
+]
+\textbf{Pregunta}: ¿Cuál es la sensibilidad de cada empresa al riesgo sistemático del mercado?
+
+\vspace{0.3cm}
+\textbf{Respuesta basada en evidencia}:
+
+La estimación del modelo CAPM para las 30 empresas reveló:
+
+\begin{itemize}
+    \item \textbf{Beta promedio}: $\bar{\beta} = 1.43$, indicando que el sector tecnológico es 43\% más volátil que el mercado general
+    \item \textbf{Rango de betas}: De $-0.66$ (Palantir, defensiva atípica) a $2.82$ (Spotify, altamente agresiva)
+    \item \textbf{Significancia}: Solo 43.3\% de las betas son estadísticamente significativas ($p < 0.05$), reflejando alta variabilidad en la sensibilidad al mercado
+    \item \textbf{Relación volatilidad-correlación}: Correlación negativa débil ($\beta_1 = -0.207$, $R^2 = 0.185$), sugiriendo que empresas más correlacionadas tienen menor volatilidad idiosincrática
+    \item \textbf{Robustez}: Correlación de 0.97 entre betas estimadas con QQQ y mercado equal-weighted
+\end{itemize}
+
+\textbf{Implicación}: Los coeficientes beta permiten ajustar carteras por riesgo sistemático, pero el bajo $R^2$ indica que factores idiosincrásicos dominan la volatilidad total.
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=warningyellow,
+    colframe=warningborder,
+    fonttitle=\bfseries\large,
+    title={P4: Significancia de Retornos y Diferencias entre Grupos},
+    sharp corners,
+    boxrule=1.5pt
+]
+\textbf{Pregunta}: ¿Los retornos medios son estadísticamente distintos de cero y difieren entre grupos de riesgo?
+
+\vspace{0.3cm}
+\textbf{Respuesta basada en evidencia}:
+
+\textbf{Retornos individuales}:
+\begin{itemize}
+    \item Sin corrección: 6 empresas con $p < 0.05$ (Broadcom, Microsoft, ServiceNow, Nvidia, Apple, Fortinet)
+    \item Tras corrección FDR: \textbf{Ninguna empresa} alcanza significancia al 5\%, ilustrando el impacto de las comparaciones múltiples
+    \item Los intervalos de confianza t-Student y bootstrap son altamente concordantes
+\end{itemize}
+
+\textbf{Comparación Beta Low vs High}:
+\begin{itemize}
+    \item Empresas alto beta: retorno medio 2.0\% vs 1.1\% para bajo beta
+    \item Welch t-test: $t = -1.814$, $p = 0.070$ (marginalmente no significativo)
+    \item Hedges' $g = -0.077$ (efecto muy pequeño)
+    \item Test de Levene: Volatilidades \textbf{significativamente diferentes} ($p = 0.046$)
+\end{itemize}
+
+\textbf{Implicación}: La diferencia en retornos entre grupos no es estadísticamente robusta, pero la diferencia en volatilidades sí lo es, consistente con la teoría CAPM.
+\end{tcolorbox}
+
+% ----------------------------------------------------------------------------
+\subsection{Síntesis de Resultados Principales}
+% ----------------------------------------------------------------------------
+
+\begin{tcolorbox}[
+    enhanced,
+    colback=NavyBlue!5,
+    colframe=NavyBlue,
+    fonttitle=\bfseries\large,
+    title=Hallazgos Clave del Estudio,
+    sharp corners,
+    boxrule=1.5pt
+]
+\begin{enumerate}[label=\textcolor{NavyBlue}{\arabic*.},leftmargin=2em,itemsep=6pt]
+    \item \textbf{Leptocurtosis generalizada}: El 73.3\% de las empresas exhibe colas más pesadas que la normal, invalidando supuestos gaussianos para gestión de riesgos.
+    
+    \item \textbf{Segmentación robusta}: K-Means ($k=2$) identifica clusters defensivo (86.7\%) y agresivo (13.3\%) con diferencias estadísticamente significativas.
+    
+    \item \textbf{Sector más volátil que mercado}: Beta promedio de 1.43 indica que el sector tecnológico amplifica movimientos del mercado.
+    
+    \item \textbf{Heterogeneidad de sensibilidad}: Betas varían de $-0.66$ a $2.82$, reflejando estrategias y capitalizaciones diversas.
+    
+    \item \textbf{Retornos no robustamente significativos}: Tras corrección por múltiples tests, ninguna empresa muestra retornos significativamente distintos de cero.
+    
+    \item \textbf{Volatilidades diferenciadas por beta}: Empresas de alto beta tienen volatilidades significativamente mayores (12.8\% vs 8.5\%, $p = 0.046$).
+    
+    \item \textbf{Impacto COVID-19}: El 10.7\% de empresas muestra cambio estructural post-pandemia en sus patrones de retorno.
+\end{enumerate}
+\end{tcolorbox}
+
+% ----------------------------------------------------------------------------
+\subsection{Limitaciones del Estudio}
+% ----------------------------------------------------------------------------
+
+\begin{advertencia}[title=Limitaciones Metodológicas y de Datos]
+El presente estudio presenta las siguientes limitaciones que deben considerarse al interpretar los resultados:
+
+\begin{enumerate}[label=\textcolor{warningborder}{\arabic*.},leftmargin=2em,itemsep=4pt]
+    \item \textbf{Sesgo de supervivencia}: El análisis incluye solo empresas que permanecen en el NASDAQ-100 a diciembre 2024, excluyendo empresas que fueron removidas del índice durante el período de estudio.
+    
+    \item \textbf{Frecuencia mensual}: Los datos mensuales pueden suavizar volatilidades intradiarias y semanales, potencialmente subestimando el riesgo de corto plazo.
+    
+    \item \textbf{Período específico}: El período 2018--2024 incluye eventos atípicos (COVID-19, inflación 2022) que pueden no representar condiciones ``normales'' de mercado.
+    
+    \item \textbf{Sector único}: Los resultados son específicos del sector tecnológico y pueden no generalizar a otros sectores del mercado.
+    
+    \item \textbf{Benchmark único}: El uso de QQQ como proxy del mercado es apropiado para el sector, pero puede diferir de benchmarks globales (S\&P 500, MSCI World).
+    
+    \item \textbf{Potencia estadística limitada}: Para comparaciones de retornos entre grupos, la potencia del 46.4\% es insuficiente para detectar efectos pequeños con confiabilidad.
+    
+    \item \textbf{Tasa libre de riesgo}: Se asumió $R_f \approx 0$ para retornos mensuales, lo cual es una aproximación razonable pero no exacta.
+\end{enumerate}
+\end{advertencia}
+
+% ----------------------------------------------------------------------------
+\subsection{Extensiones y Trabajo Futuro}
+% ----------------------------------------------------------------------------
+
+\begin{nota}[title=Propuestas para Investigación Futura]
+El presente estudio abre múltiples líneas de investigación para trabajo futuro:
+
+\begin{enumerate}[label=\textcolor{noteborder}{\arabic*.},leftmargin=2em,itemsep=4pt]
+    \item \textbf{Modelos de factores}: Extender el CAPM univariado a modelos multifactoriales (Fama-French 3/5 factores, Carhart momentum) para capturar fuentes adicionales de riesgo sistemático.
+    
+    \item \textbf{Frecuencia diaria}: Repetir el análisis con datos diarios para capturar dinámicas de corto plazo y calcular métricas de riesgo más precisas (VaR, CVaR).
+    
+    \item \textbf{Análisis de eventos}: Estudiar el impacto de eventos específicos (reportes de ganancias, lanzamientos de productos, cambios regulatorios) en la volatilidad y retornos.
+    
+    \item \textbf{Modelos GARCH}: Aplicar modelos de volatilidad condicional (GARCH, EGARCH) para capturar la heterocedasticidad observada en los retornos.
+    
+    \item \textbf{Redes de correlación}: Construir grafos de correlación dinámica para identificar estructuras de dependencia cambiantes en el tiempo.
+    
+    \item \textbf{Machine Learning}: Aplicar técnicas de clasificación supervisada (Random Forest, XGBoost) para predecir pertenencia a clusters o dirección de retornos.
+    
+    \item \textbf{Análisis sectorial comparativo}: Extender el estudio a otros sectores (financiero, salud, energía) para comparar perfiles de riesgo-retorno.
+    
+    \item \textbf{Incorporación de fundamentales}: Integrar ratios contables (P/E, P/B, ROE) como variables explicativas de la heterogeneidad en betas.
+\end{enumerate}
+\end{nota}
+
+% ============================================================================
+% BIBLIOGRAFÍA
+% ============================================================================
+\newpage
+\section*{Referencias Bibliográficas}
+\addcontentsline{toc}{section}{Referencias Bibliográficas}
+
+\begin{enumerate}[label={[\arabic*]},leftmargin=2em]
+    \item Benjamini, Y., \& Hochberg, Y. (1995). Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing. \textit{Journal of the Royal Statistical Society: Series B}, 57(1), 289--300. DOI: 10.1111/j.2517-6161.1995.tb02031.x.
+    
+    \item Campbell, J. Y., Lo, A. W., \& MacKinlay, A. C. (1997). \textit{The Econometrics of Financial Markets}. Princeton University Press. ISBN: 978-0691043012.
+    
+    \item Cont, R. (2001). Empirical properties of asset returns: stylized facts and statistical issues. \textit{Quantitative Finance}, 1(2), 223--236. DOI: 10.1080/713665670.
+    
+    \item Davies, D. L., \& Bouldin, D. W. (1979). A Cluster Separation Measure. \textit{IEEE Transactions on Pattern Analysis and Machine Intelligence}, PAMI-1(2), 224--227. DOI: 10.1109/TPAMI.1979.4766909.
+    
+    \item Efron, B. (1979). Bootstrap Methods: Another Look at the Jackknife. \textit{The Annals of Statistics}, 7(1), 1--26. DOI: 10.1214/aos/1176344552.
+    
+    \item Efron, B., \& Tibshirani, R. J. (1993). \textit{An Introduction to the Bootstrap}. Chapman \& Hall/CRC. ISBN: 978-0412042317.
+    
+    \item Greene, W. H. (2018). \textit{Econometric Analysis} (8th ed.). Pearson. ISBN: 978-0134461533.
+    
+    \item Hastie, T., Tibshirani, R., \& Friedman, J. (2009). \textit{The Elements of Statistical Learning: Data Mining, Inference, and Prediction} (2nd ed.). Springer. ISBN: 978-0387848570.
+    
+    \item Hull, J. C. (2018). \textit{Options, Futures, and Other Derivatives} (10th ed.). Pearson Education. ISBN: 978-0134472089.
+    
+    \item Jarque, C. M., \& Bera, A. K. (1987). A test for normality of observations and regression residuals. \textit{International Statistical Review}, 55(2), 163--172. DOI: 10.2307/1403192.
+    
+    \item Levene, H. (1960). Robust tests for equality of variances. In I. Olkin et al. (Eds.), \textit{Contributions to Probability and Statistics: Essays in Honor of Harold Hotelling} (pp. 278--292). Stanford University Press.
+    
+    \item MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. \textit{Proceedings of the 5th Berkeley Symposium on Mathematical Statistics and Probability}, 1, 281--297.
+    
+    \item Markowitz, H. (1952). Portfolio Selection. \textit{The Journal of Finance}, 7(1), 77--91. DOI: 10.2307/2975974.
+    
+    \item Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. \textit{Journal of Computational and Applied Mathematics}, 20, 53--65. DOI: 10.1016/0377-0427(87)90125-7.
+    
+    \item Rubin, D. B. (1976). Inference and missing data. \textit{Biometrika}, 63(3), 581--592. DOI: 10.1093/biomet/63.3.581.
+    
+    \item Shapiro, S. S., \& Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). \textit{Biometrika}, 52(3--4), 591--611. DOI: 10.1093/biomet/52.3-4.591.
+    
+    \item Sharpe, W. F. (1964). Capital Asset Prices: A Theory of Market Equilibrium under Conditions of Risk. \textit{The Journal of Finance}, 19(3), 425--442. DOI: 10.2307/2977928.
+    
+    \item Tibshirani, R., Walther, G., \& Hastie, T. (2001). Estimating the number of clusters in a data set via the gap statistic. \textit{Journal of the Royal Statistical Society: Series B}, 63(2), 411--423. DOI: 10.1111/1467-9868.00293.
+    
+    \item Tukey, J. W. (1977). \textit{Exploratory Data Analysis}. Addison-Wesley Publishing Company. ISBN: 978-0201076165.
+    
+    \item Wasserman, L. (2004). \textit{All of Statistics: A Concise Course in Statistical Inference}. Springer. ISBN: 978-0387402727.
+    
+    \item Welch, B. L. (1947). The generalization of `Student's' problem when several different population variances are involved. \textit{Biometrika}, 34(1--2), 28--35. DOI: 10.1093/biomet/34.1-2.28.
+    
+    \item Wooldridge, J. M. (2020). \textit{Introductory Econometrics: A Modern Approach} (7th ed.). Cengage Learning. ISBN: 978-1111531041.
+\end{enumerate}
+
+% ============================================================================
+% FIN DEL DOCUMENTO
+% ============================================================================
+
+\end{document}
