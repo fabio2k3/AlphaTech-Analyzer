@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Análisis de Inversiones Tech - Predicción con PyTorch</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <style>
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0,0,0,0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .scenario-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s;
+        }
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .scenario-card.optimistic { border-left-color: var(--success-color); }
+        .scenario-card.pessimistic { border-left-color: var(--danger-color); }
+        .scenario-card.neutral { border-left-color: var(--warning-color); }
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .scenario-title {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .scenario-prob {
+            background: #e5e7eb;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .scenario-return {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .scenario-desc {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+        .scenarios-section {
+            background: #f0f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📈 Análisis de Inversiones en Tecnología</h1>
+            <p class="subtitle">Predicción Avanzada con Deep Learning y Análisis de Escenarios</p>
+        </header>
+
+        <div class="search-section">
+            <h2>Selecciona una Empresa</h2>
+            <label for="companySelect" class="sr-only">Selecciona una empresa (ticker)</label>
+            <select id="companySelect" class="company-select" aria-label="Selecciona una empresa">
+                <option value="">-- Selecciona una empresa --</option>
+                {% for c in companies %}
+                <option value="{{ c.ticker }}">{{ c.name }} ({{ c.ticker }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="errorMessage" role="alert" style="display:none; color:#b91c1c; text-align:center; margin:16px 0;"></div>
+
+        <div id="loadingSpinner" class="loading" style="display: none;" role="status" aria-live="polite">
+            <div class="spinner"></div>
+            <p>Analizando datos y entrenando modelo avanzado...</p>
+        </div>
+
+        <div id="resultsSection" style="display: none;">
+            <div class="company-header" role="region" aria-labelledby="companyName">
+                <h2 id="companyName"></h2>
+                <span id="companyTicker" class="ticker-badge"></span>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="stats-grid" role="list">
+                <div class="stat-card" role="listitem">
+                    <h3>Retorno Promedio</h3>
+                    <p id="meanReturn" class="stat-value"></p>
+                    <span class="stat-label">Mensual</span>
+                </div>
+                <div class="stat-card" role="listitem">
+                    <h3>Volatilidad</h3>
+                    <p id="volatility" class="stat-value"></p>
+                    <span class="stat-label">Desviación Estándar</span>
+                </div>
+                <div class="stat-card" role="listitem">
+                    <h3>Beta (vs QQQ)</h3>
+                    <p id="beta" class="stat-value"></p>
+                    <span class="stat-label">Sensibilidad al mercado</span>
+                </div>
+                <div class="stat-card" role="listitem">
+                    <h3>Volumen Promedio</h3>
+                    <p id="avgVolume" class="stat-value"></p>
+                    <span class="stat-label">Mensual</span>
+                </div>
+            </div>
+
+            <!-- Predicciones Base -->
+            <div class="predictions-section" role="region" aria-labelledby="predictionsTitle">
+                <h2 id="predictionsTitle">🔮 Predicción para el Próximo Mes</h2>
+
+                <div class="prediction-comparison">
+                    <div class="prediction-card">
+                        <h3>📊 Método Histórico</h3>
+                        <p class="prediction-value" id="historicalPrediction"></p>
+                        <span class="method-description">Basado en promedio histórico</span>
+                    </div>
+
+                    <div class="prediction-card highlight">
+                        <h3>🤖 Modelo PyTorch Avanzado</h3>
+                        <p class="prediction-value" id="modelPrediction"></p>
+                        <span class="method-description">Red neuronal con factores macro</span>
+                        <div class="model-info">
+                            <small>RMSE: <span id="modelLoss"></span></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="best-method">
+                    <p><strong>Método más preciso:</strong> <span id="bestMethod" class="method-badge"></span></p>
+                </div>
+            </div>
+
+            <!-- Análisis de Escenarios -->
+            <div class="scenarios-section" role="region" aria-labelledby="scenariosTitle">
+                <h2 id="scenariosTitle">🎯 Análisis de Escenarios de Mercado</h2>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">
+                    Predicciones considerando diferentes condiciones de mercado y factores macroeconómicos
+                </p>
+                
+                <div id="scenariosContainer">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Probabilidades -->
+            <div class="probabilities-section" role="region" aria-labelledby="probTitle">
+                <h2 id="probTitle">📊 Probabilidades de Inversión (Ponderadas)</h2>
+                <div class="prob-container">
+                    <canvas id="probabilityChart" role="img" aria-label="Gráfico de probabilidad"></canvas>
+                </div>
+
+                <div class="prob-values">
+                    <div class="prob-item success">
+                        <span class="prob-label">✅ Probabilidad de Éxito:</span>
+                        <span id="probSuccess" class="prob-percentage"></span>
+                    </div>
+                    <div class="prob-item failure">
+                        <span class="prob-label">❌ Probabilidad de Pérdida:</span>
+                        <span id="probFailure" class="prob-percentage"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculadora -->
+            <div class="investment-calculator" role="region" aria-labelledby="calcTitle">
+                <h2 id="calcTitle">💰 Calculadora de Inversión</h2>
+                <div class="calculator-form">
+                    <label for="investmentAmount">Monto a Invertir ($):</label>
+                    <input type="number" id="investmentAmount" placeholder="10000" min="1" step="100" />
+                    <button id="calculateBtn" class="btn-calculate" type="button">Calcular Ganancia/Pérdida</button>
+                </div>
+
+                <div id="investmentResults" style="display: none;">
+                    <h3 style="text-align:center; margin-bottom:12px;">Resultados por Método / Escenario</h3>
+
+                    <!-- Resumen de inversión -->
+                    <div class="result-grid" style="margin-bottom:16px;">
+                        <div class="result-item">
+                            <span class="result-label">Inversión Inicial:</span>
+                            <span id="initialInvestment" class="result-value"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Panel filas (historial):</span>
+                            <span id="panelRows" class="result-value"></span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Método disponible:</span>
+                            <span id="modelAvailable" class="result-value"></span>
+                        </div>
+                    </div>
+
+                    <!-- Tabla comparativa -->
+                    <div style="overflow-x:auto;">
+                        <table id="investmentTable" style="width:100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background:#f3f4f6;">
+                                    <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Método / Escenario</th>
+                                    <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Retorno previsto</th>
+                                    <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Ganancia / Pérdida</th>
+                                    <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Monto final</th>
+                                </tr>
+                            </thead>
+                            <tbody id="investmentTableBody">
+                                <!-- Se rellena por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="text-align:center; margin-top:12px; color:var(--text-secondary); font-size:0.9em;">
+                        * Retornos expresados como porcentajes mensuales. Si el valor está en fracción (ej. 0.02) se interpreta como 2.00%.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Gráfico 
+            <div class="chart-section" role="region" aria-labelledby="riskTitle">
+                <h2 id="riskTitle">📈 Análisis de Riesgo vs Retorno</h2>
+                <canvas id="riskReturnChart" role="img" aria-label="Gráfico riesgo vs retorno"></canvas>
+            </div>-->
+        </div>
+    </div>
+
+    <footer>
+        <p>Proyecto Final de Estadística - Análisis Avanzado de Acciones Tecnológicas 2018-2024</p>
+        <p><small>Predicciones con factores macroeconómicos y análisis de sentimiento</small></p>
+    </footer>
+
+    <noscript>
+        <div style="background:#fff3cd; color:#664d03; padding:12px; border-radius:8px; margin:16px auto; max-width:900px; text-align:center;">
+            Esta aplicación requiere JavaScript para funcionar correctamente.
+        </div>
+    </noscript>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
