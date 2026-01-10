@@ -1,0 +1,488 @@
+/* Reset y Variables */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+}
+
+/* Body y Contenedor Principal */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text-primary);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: var(--text-secondary);
+}
+
+/* Sección de Búsqueda */
+.search-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.search-section h2 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.company-select {
+    width: 100%;
+    max-width: 500px;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.company-select:hover {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.company-select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+}
+
+/* Loading Spinner */
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.spinner {
+    border: 5px solid #f3f4f6;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Company Header */
+.company-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--bg-gradient);
+    border-radius: 15px;
+    color: white;
+}
+
+.ticker-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card h3 {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 10px 0;
+}
+
+.stat-label {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+
+/* Predictions Section */
+.predictions-section {
+    background: #f9fafb;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.predictions-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--text-primary);
+}
+
+.prediction-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.prediction-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.prediction-card.highlight {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.prediction-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.prediction-card h3 {
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.prediction-value {
+    font-size: 2.2em;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.prediction-value.positive {
+    color: var(--success-color);
+}
+
+.prediction-value.negative {
+    color: var(--danger-color);
+}
+
+.method-description {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.model-info {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.best-method {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.method-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* Probabilities Section */
+.probabilities-section {
+    background: #f0fdf4;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.probabilities-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.prob-container {
+    max-width: 400px;
+    margin: 0 auto 25px;
+}
+
+.prob-values {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.prob-item {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    min-width: 250px;
+}
+
+.prob-item.success {
+    border-left: 5px solid var(--success-color);
+}
+
+.prob-item.failure {
+    border-left: 5px solid var(--danger-color);
+}
+
+.prob-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.prob-percentage {
+    display: block;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+/* Investment Calculator */
+.investment-calculator {
+    background: #fefce8;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.investment-calculator h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.calculator-form {
+    max-width: 500px;
+    margin: 0 auto 25px;
+}
+
+.calculator-form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.calculator-form input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1em;
+    border: 2px solid var(--warning-color);
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-calculate {
+    width: 100%;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    background: var(--warning-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-calculate:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.result-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+}
+
+.result-item.highlight-result {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    border: 2px solid var(--success-color);
+}
+
+.result-label {
+    display: block;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.result-value {
+    display: block;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+/* Chart Section */
+.chart-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+}
+
+.chart-section h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    color: white;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .prediction-comparison {
+        grid-template-columns: 1fr;
+    }
+    
+    .prob-values {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
+    header h1 {
+        font-size: 1.5em;
+    }
+    
+    .subtitle {
+        font-size: 1em;
+    }
+    
+    .company-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .stat-value {
+        font-size: 1.5em;
+    }
+    
+    .prediction-value {
+        font-size: 1.8em;
+    }
+}
